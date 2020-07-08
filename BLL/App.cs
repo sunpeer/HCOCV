@@ -2137,9 +2137,9 @@ namespace BLL
         }
         public bool CheckRVNormal(double r,double v)
         {
-            if (r == 10000000000)
+            if (r == 10000000000||r==100000000)
                 return false;
-            if (v == 10000000000)
+            if (v == 10000000000||r==100000000)
                 return false;
             return true;
         }
