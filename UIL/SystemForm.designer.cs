@@ -119,6 +119,7 @@
             this.inBtn = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.onprocessStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tech_StdCombox = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -132,7 +133,7 @@
             // batteryNum2Rbtn
             // 
             this.batteryNum2Rbtn.AutoSize = true;
-            this.batteryNum2Rbtn.Location = new System.Drawing.Point(95, 30);
+            this.batteryNum2Rbtn.Location = new System.Drawing.Point(30, 28);
             this.batteryNum2Rbtn.Name = "batteryNum2Rbtn";
             this.batteryNum2Rbtn.Size = new System.Drawing.Size(65, 16);
             this.batteryNum2Rbtn.TabIndex = 1;
@@ -143,7 +144,7 @@
             // batteryNum4Rbtn
             // 
             this.batteryNum4Rbtn.AutoSize = true;
-            this.batteryNum4Rbtn.Location = new System.Drawing.Point(265, 30);
+            this.batteryNum4Rbtn.Location = new System.Drawing.Point(146, 28);
             this.batteryNum4Rbtn.Name = "batteryNum4Rbtn";
             this.batteryNum4Rbtn.Size = new System.Drawing.Size(65, 16);
             this.batteryNum4Rbtn.TabIndex = 2;
@@ -153,6 +154,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.tech_StdCombox);
             this.groupBox1.Controls.Add(this.batteryNum4Rbtn);
             this.groupBox1.Controls.Add(this.saveBtn);
             this.groupBox1.Controls.Add(this.batteryNum2Rbtn);
@@ -162,11 +164,11 @@
             this.groupBox1.Size = new System.Drawing.Size(437, 84);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "一次检测电池数量";
+            this.groupBox1.Text = "设备工艺参数设置";
             // 
             // saveBtn
             // 
-            this.saveBtn.Location = new System.Drawing.Point(169, 50);
+            this.saveBtn.Location = new System.Drawing.Point(165, 52);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(75, 23);
             this.saveBtn.TabIndex = 3;
@@ -1046,6 +1048,19 @@
             this.onprocessStripStatusLabel.Name = "onprocessStripStatusLabel";
             this.onprocessStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
+            // tech_StdCombox
+            // 
+            this.tech_StdCombox.FormattingEnabled = true;
+            this.tech_StdCombox.Items.AddRange(new object[] {
+            "VK2698B5",
+            "VK405974",
+            "Vk466574"});
+            this.tech_StdCombox.Location = new System.Drawing.Point(31, 52);
+            this.tech_StdCombox.Name = "tech_StdCombox";
+            this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
+            this.tech_StdCombox.TabIndex = 4;
+            this.tech_StdCombox.Text = "VK2698B5";
+            // 
             // SystemForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1173,5 +1188,6 @@
         private System.Windows.Forms.Label maxKLabel;
         private System.Windows.Forms.Label minKLabel;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.ComboBox tech_StdCombox;
     }
 }

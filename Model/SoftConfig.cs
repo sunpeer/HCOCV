@@ -16,6 +16,7 @@ namespace Model
     /// </summary>
     public class SoftConfig
     {
+        public string tech_Std { get; set; }
         public int BatteryNum { get; set; }
         public int Bt3562Baudrate { get; set; }
         public string Bt3562Com { get; set; }
@@ -88,6 +89,7 @@ namespace Model
             config.temCoeff = double.Parse(ConfigurationManager.AppSettings["temCoeff"]);
             config.maxK = double.Parse(ConfigurationManager.AppSettings["maxK"]);
             config.minK = double.Parse(ConfigurationManager.AppSettings["minK"]);
+            config.tech_Std = ConfigurationManager.AppSettings["tech_Std"];
             return config;
         }
 
@@ -127,6 +129,7 @@ namespace Model
             SetAppSettingsValue("operation_id", config.operation_id, ref xNode);
             SetAppSettingsValue("minK", config.minK.ToString(),ref xNode);
             SetAppSettingsValue("maxK", config.maxK.ToString(), ref xNode);
+            SetAppSettingsValue("tech_Std", config.tech_Std, ref xNode);
             xDoc.Save(dir.FullName + @"\UIL.exe.config");
         }
     }

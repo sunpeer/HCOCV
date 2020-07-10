@@ -33,6 +33,7 @@ namespace UIL
             statisticTxtBox.Text = app.curConfig.StatisticNum.ToString();
             srLiveForm.EndReceive();
             srLiveForm.IpAddress = app.curConfig.Sr2000wIp;
+            tech_StdCombox.Text = app.curConfig.tech_Std;
             if (!srLiveForm.BeginReceive())
             {
                 onprocessStripStatusLabel.Text = "实时显示窗口不能正常显示";
@@ -93,6 +94,36 @@ namespace UIL
         public Action<int> SetScanNumEvent;
         private void saveBtn_Click(object sender, EventArgs e)
         {
+            switch(tech_StdCombox.Text)
+            {
+                case "VK2698B5":
+                    app.fx5u.ResetRegister("D500", 1560000);
+                    app.fx5u.ResetRegister("D501", 1840000);
+                    app.fx5u.ResetRegister("M500", 0);
+                    Thread.Sleep(100);
+                    app.fx5u.ResetRegister("M500", 1);
+                    app.fx5u.ResetRegister("M500", 0);
+                    app.curConfig.tech_Std = "VK2698B5";
+                    break;
+                case "VK405974":
+                    app.fx5u.ResetRegister("D500", 1620000);
+                    app.fx5u.ResetRegister("D501", 1900000);
+                    app.fx5u.ResetRegister("M500", 0);
+                    Thread.Sleep(100);
+                    app.fx5u.ResetRegister("M500", 1);
+                    app.fx5u.ResetRegister("M500", 0);
+                    app.curConfig.tech_Std = "VK405974";
+                    break;
+                case "VK466574":
+                    app.fx5u.ResetRegister("D500", 1600000);
+                    app.fx5u.ResetRegister("D501", 1880000);
+                    app.fx5u.ResetRegister("M500", 0);
+                    Thread.Sleep(100);
+                    app.fx5u.ResetRegister("M500", 1);
+                    app.fx5u.ResetRegister("M500", 0);
+                    app.curConfig.tech_Std = "VK466574";
+                    break;
+            }
             if(batteryNum2Rbtn.Checked)
             {
                 app.SetScanNum(2,true);
@@ -536,6 +567,5 @@ namespace UIL
         {
             this.Dispose();
         }
-
     }
 }
