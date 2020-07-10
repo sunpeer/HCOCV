@@ -97,8 +97,6 @@ namespace UIL
             switch(tech_StdCombox.Text)
             {
                 case "VK2698B5":
-                    app.fx5u.ResetRegister("D500", 1560000);
-                    app.fx5u.ResetRegister("D501", 1840000);
                     app.fx5u.ResetRegister("M500", 0);
                     Thread.Sleep(100);
                     app.fx5u.ResetRegister("M500", 1);
@@ -106,21 +104,17 @@ namespace UIL
                     app.curConfig.tech_Std = "VK2698B5";
                     break;
                 case "VK405974":
-                    app.fx5u.ResetRegister("D500", 1620000);
-                    app.fx5u.ResetRegister("D501", 1900000);
-                    app.fx5u.ResetRegister("M500", 0);
+                    app.fx5u.ResetRegister("M501", 0);
                     Thread.Sleep(100);
-                    app.fx5u.ResetRegister("M500", 1);
-                    app.fx5u.ResetRegister("M500", 0);
+                    app.fx5u.ResetRegister("M501", 1);
+                    app.fx5u.ResetRegister("M501", 0);
                     app.curConfig.tech_Std = "VK405974";
                     break;
                 case "VK466574":
-                    app.fx5u.ResetRegister("D500", 1600000);
-                    app.fx5u.ResetRegister("D501", 1880000);
-                    app.fx5u.ResetRegister("M500", 0);
+                    app.fx5u.ResetRegister("M502", 0);
                     Thread.Sleep(100);
-                    app.fx5u.ResetRegister("M500", 1);
-                    app.fx5u.ResetRegister("M500", 0);
+                    app.fx5u.ResetRegister("M502", 1);
+                    app.fx5u.ResetRegister("M502", 0);
                     app.curConfig.tech_Std = "VK466574";
                     break;
             }

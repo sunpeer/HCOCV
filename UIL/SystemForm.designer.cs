@@ -1054,7 +1054,7 @@
             this.tech_StdCombox.Items.AddRange(new object[] {
             "VK2698B5",
             "VK405974",
-            "Vk466574"});
+            "VK466574"});
             this.tech_StdCombox.Location = new System.Drawing.Point(31, 52);
             this.tech_StdCombox.Name = "tech_StdCombox";
             this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
