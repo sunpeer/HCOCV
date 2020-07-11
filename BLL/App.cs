@@ -189,34 +189,36 @@ namespace BLL
             Log myLog = null;
             if((string)row["operation_id"] == "O2T")    //制作O2请求体
             {
+                UploadBatteryO2TDataClass request = new UploadBatteryO2TDataClass();
+                request.DATA1 = row["voltage"].ToString();
+                request.DATA2 = row["resistance"].ToString();
+                request.DATA03 = row["techId"].ToString();
+                request.DATA4 = row["temperature"].ToString();
+                request.DATA02 = row["shop_order"].ToString();
+                request.DATA12 = row["origin_voltage"].ToString();
+                request.MATERIAL_TYPE= row["techId"].ToString();
+                request.DATA6 = row["o1_voltage"].ToString();
+                request.DATA3 = row["K"].ToString();
+                request.DATA16 = row["temCoeff"].ToString();
+                string flag = ((string)row["result"] == "合格") ? "OK" : "NG";
+                string ng_code = locaErrtype2MesErrtype(row["errtype"].ToString());
+                result=mes.UploadBatteryO2TAgain(row["sn"].ToString(), flag, row["opertime"].ToString(),
+                    ng_code, row["origin_voltage"].ToString(),row["operation_id"].ToString(), request, ref msg, ref myLog);
+            }
+            else    //制作O1请求体
+            {
                 UploadBatteryDataClass request = new UploadBatteryDataClass();
                 request.DATA1 = row["voltage"].ToString();
                 request.DATA2 = row["resistance"].ToString();
                 request.DATA03 = row["techId"].ToString();
                 request.DATA4 = row["temperature"].ToString();
                 request.DATA02 = row["shop_order"].ToString();
-                request.DATA12 = row["origin_voltage"].ToString();
                 request.DATA16 = row["temCoeff"].ToString();
-                string flag = ((string)row["result"] == "合格") ? "OK" : "NG";
-                string ng_code = locaErrtype2MesErrtype(row["errtype"].ToString());
-                result=mes.UploadBatteryAgain(row["sn"].ToString(), flag, row["opertime"].ToString(),
-                    ng_code, row["origin_voltage"].ToString(),row["operation_id"].ToString(), request, ref msg, ref myLog);
-            }
-            else    //制作O1请求体
-            {
-                UploadBatteryO2TDataClass request = new UploadBatteryO2TDataClass();
-                request.DATA1 = row["voltage"].ToString();
-                request.DATA2 = row["resistance"].ToString();
-                request.DATA03 = row["techId"].ToString();
-                request.DATA3 = row["K"].ToString();
-                request.DATA4 = row["temperature"].ToString();
-                request.DATA02 = row["shop_order"].ToString();
-                request.DATA16 = row["temCoeff"].ToString();
-                request.DATA6 = row["o1_voltage"].ToString();
+                request.MATERIAL_TYPE = row["techId"].ToString();
                 request.DATA12 = row["origin_voltage"].ToString();
                 string flag = ((string)row["result"] == "合格")?"OK":"NG";
                 string ng_code = locaErrtype2MesErrtype(row["errtype"].ToString());
-                result = mes.UploadBatteryO2TAgain(row["sn"].ToString(), flag, row["opertime"].ToString(),
+                result = mes.UploadBatteryAgain(row["sn"].ToString(), flag, row["opertime"].ToString(),
                     ng_code, row["origin_voltage"].ToString(),row["operation_id"].ToString(),request, ref msg, ref myLog);
             }
             if (result)  //如果请求上传成功，改变本地数据的状态
