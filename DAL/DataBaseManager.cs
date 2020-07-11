@@ -50,7 +50,7 @@ namespace DAL
         public static void updateBatterySavedflag(string sn, string operation_id)
         {
             //更新数据表
-            string sql = "update battery set savedflag=true where sn=@sn and operation_id=@operation_id;";
+            string sql = "update battery set savedflag='上传成功' where sn=@sn and operation_id=@operation_id;";
             MySqlParameter p1 = new MySqlParameter("@sn", sn);
             MySqlParameter p2 = new MySqlParameter("@operation_id", operation_id);
             DBOper.ExecuteCommand(sql, p1, p2);
