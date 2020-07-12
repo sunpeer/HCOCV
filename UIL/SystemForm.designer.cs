@@ -32,6 +32,7 @@
             this.batteryNum2Rbtn = new System.Windows.Forms.RadioButton();
             this.batteryNum4Rbtn = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tech_StdCombox = new System.Windows.Forms.ComboBox();
             this.saveBtn = new System.Windows.Forms.Button();
             this.getTechStandardBtn = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -119,7 +120,6 @@
             this.inBtn = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.onprocessStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tech_StdCombox = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -165,6 +165,19 @@
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备工艺参数设置";
+            // 
+            // tech_StdCombox
+            // 
+            this.tech_StdCombox.FormattingEnabled = true;
+            this.tech_StdCombox.Items.AddRange(new object[] {
+            "VK2698B5",
+            "VK405974",
+            "VK466574"});
+            this.tech_StdCombox.Location = new System.Drawing.Point(31, 52);
+            this.tech_StdCombox.Name = "tech_StdCombox";
+            this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
+            this.tech_StdCombox.TabIndex = 4;
+            this.tech_StdCombox.Text = "VK2698B5";
             // 
             // saveBtn
             // 
@@ -523,9 +536,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(203, 30);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 12);
+            this.label7.Size = new System.Drawing.Size(29, 12);
             this.label7.TabIndex = 3;
-            this.label7.Text = "错误率";
+            this.label7.Text = "NG率";
             // 
             // errorRateTxtBox
             // 
@@ -1047,19 +1060,6 @@
             // 
             this.onprocessStripStatusLabel.Name = "onprocessStripStatusLabel";
             this.onprocessStripStatusLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // tech_StdCombox
-            // 
-            this.tech_StdCombox.FormattingEnabled = true;
-            this.tech_StdCombox.Items.AddRange(new object[] {
-            "VK2698B5",
-            "VK405974",
-            "VK466574"});
-            this.tech_StdCombox.Location = new System.Drawing.Point(31, 52);
-            this.tech_StdCombox.Name = "tech_StdCombox";
-            this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
-            this.tech_StdCombox.TabIndex = 4;
-            this.tech_StdCombox.Text = "VK2698B5";
             // 
             // SystemForm
             // 
