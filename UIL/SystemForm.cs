@@ -135,10 +135,25 @@ namespace UIL
             if(scaner_move_noRbtn.Checked)
             {
                 app.curConfig.scaner_move_enable = "0";
+                if(app.curConfig.scaner_position=="0")
+                {
+                    app.fx5u.SendCmd("D175");
+                    app.curConfig.scaner_position = "1";
+                }
+                else if(app.curConfig.scaner_position=="2")
+                {
+                    app.fx5u.SendCmd("D174");
+                    app.curConfig.scaner_position = "1";
+                }
             }
             else if(scanner_move_yesRbtn.Checked)
             {
                 app.curConfig.scaner_move_enable = "1";
+                if(app.curConfig.scaner_position=="1")
+                {
+                    app.fx5u.SendCmd("D174");
+                    app.curConfig.scaner_position = "0";
+                }
             }
         }
         private void adjButton_Click(object sender, EventArgs e)
