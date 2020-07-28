@@ -32,6 +32,11 @@
             this.batteryNum2Rbtn = new System.Windows.Forms.RadioButton();
             this.batteryNum4Rbtn = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.scaner_move_noRbtn = new System.Windows.Forms.RadioButton();
+            this.scanner_move_yesRbtn = new System.Windows.Forms.RadioButton();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
             this.tech_StdCombox = new System.Windows.Forms.ComboBox();
             this.saveBtn = new System.Windows.Forms.Button();
             this.getTechStandardBtn = new System.Windows.Forms.Button();
@@ -120,11 +125,6 @@
             this.inBtn = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.onprocessStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label27 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.scanner_move_yesRbtn = new System.Windows.Forms.RadioButton();
-            this.scaner_move_noRbtn = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -137,6 +137,7 @@
             // 
             // batteryNum2Rbtn
             // 
+            this.batteryNum2Rbtn.AutoCheck = false;
             this.batteryNum2Rbtn.AutoSize = true;
             this.batteryNum2Rbtn.Location = new System.Drawing.Point(99, 23);
             this.batteryNum2Rbtn.Name = "batteryNum2Rbtn";
@@ -145,9 +146,11 @@
             this.batteryNum2Rbtn.TabStop = true;
             this.batteryNum2Rbtn.Text = "2块电池";
             this.batteryNum2Rbtn.UseVisualStyleBackColor = true;
+            this.batteryNum2Rbtn.Click += new System.EventHandler(this.batteryNum2Rbtn_Click);
             // 
             // batteryNum4Rbtn
             // 
+            this.batteryNum4Rbtn.AutoCheck = false;
             this.batteryNum4Rbtn.AutoSize = true;
             this.batteryNum4Rbtn.Location = new System.Drawing.Point(177, 23);
             this.batteryNum4Rbtn.Name = "batteryNum4Rbtn";
@@ -156,6 +159,7 @@
             this.batteryNum4Rbtn.TabStop = true;
             this.batteryNum4Rbtn.Text = "4块电池";
             this.batteryNum4Rbtn.UseVisualStyleBackColor = true;
+            this.batteryNum4Rbtn.Click += new System.EventHandler(this.batteryNum4Rbtn_Click);
             // 
             // groupBox1
             // 
@@ -175,6 +179,59 @@
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备工艺参数设置";
+            // 
+            // scaner_move_noRbtn
+            // 
+            this.scaner_move_noRbtn.AutoCheck = false;
+            this.scaner_move_noRbtn.AutoSize = true;
+            this.scaner_move_noRbtn.Location = new System.Drawing.Point(395, 24);
+            this.scaner_move_noRbtn.Name = "scaner_move_noRbtn";
+            this.scaner_move_noRbtn.Size = new System.Drawing.Size(35, 16);
+            this.scaner_move_noRbtn.TabIndex = 9;
+            this.scaner_move_noRbtn.TabStop = true;
+            this.scaner_move_noRbtn.Text = "否";
+            this.scaner_move_noRbtn.UseVisualStyleBackColor = true;
+            this.scaner_move_noRbtn.Click += new System.EventHandler(this.scaner_move_noRbtn_Click);
+            // 
+            // scanner_move_yesRbtn
+            // 
+            this.scanner_move_yesRbtn.AutoCheck = false;
+            this.scanner_move_yesRbtn.AutoSize = true;
+            this.scanner_move_yesRbtn.Location = new System.Drawing.Point(348, 24);
+            this.scanner_move_yesRbtn.Name = "scanner_move_yesRbtn";
+            this.scanner_move_yesRbtn.Size = new System.Drawing.Size(35, 16);
+            this.scanner_move_yesRbtn.TabIndex = 8;
+            this.scanner_move_yesRbtn.TabStop = true;
+            this.scanner_move_yesRbtn.Text = "是";
+            this.scanner_move_yesRbtn.UseVisualStyleBackColor = true;
+            this.scanner_move_yesRbtn.Click += new System.EventHandler(this.scanner_move_yesRbtn_Click);
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(261, 25);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(89, 12);
+            this.label32.TabIndex = 7;
+            this.label32.Text = "是否电机横移：";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(22, 57);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(77, 12);
+            this.label28.TabIndex = 6;
+            this.label28.Text = "吸塑盒型号：";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(22, 25);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(77, 12);
+            this.label27.TabIndex = 5;
+            this.label27.Text = "吸塑盒大小：";
             // 
             // tech_StdCombox
             // 
@@ -1070,55 +1127,6 @@
             // 
             this.onprocessStripStatusLabel.Name = "onprocessStripStatusLabel";
             this.onprocessStripStatusLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(22, 25);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(77, 12);
-            this.label27.TabIndex = 5;
-            this.label27.Text = "吸塑盒大小：";
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(22, 57);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(77, 12);
-            this.label28.TabIndex = 6;
-            this.label28.Text = "吸塑盒型号：";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(261, 25);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(89, 12);
-            this.label32.TabIndex = 7;
-            this.label32.Text = "是否电机横移：";
-            // 
-            // scanner_move_yesRbtn
-            // 
-            this.scanner_move_yesRbtn.AutoSize = true;
-            this.scanner_move_yesRbtn.Location = new System.Drawing.Point(348, 24);
-            this.scanner_move_yesRbtn.Name = "scanner_move_yesRbtn";
-            this.scanner_move_yesRbtn.Size = new System.Drawing.Size(35, 16);
-            this.scanner_move_yesRbtn.TabIndex = 8;
-            this.scanner_move_yesRbtn.TabStop = true;
-            this.scanner_move_yesRbtn.Text = "是";
-            this.scanner_move_yesRbtn.UseVisualStyleBackColor = true;
-            // 
-            // scaner_move_noRbtn
-            // 
-            this.scaner_move_noRbtn.AutoSize = true;
-            this.scaner_move_noRbtn.Location = new System.Drawing.Point(395, 24);
-            this.scaner_move_noRbtn.Name = "scaner_move_noRbtn";
-            this.scaner_move_noRbtn.Size = new System.Drawing.Size(35, 16);
-            this.scaner_move_noRbtn.TabIndex = 9;
-            this.scaner_move_noRbtn.TabStop = true;
-            this.scaner_move_noRbtn.Text = "否";
-            this.scaner_move_noRbtn.UseVisualStyleBackColor = true;
             // 
             // SystemForm
             // 

@@ -592,5 +592,29 @@ namespace UIL
         {
             this.Dispose();
         }
+
+        private void batteryNum2Rbtn_Click(object sender, EventArgs e)
+        {
+            batteryNum2Rbtn.Checked = true;
+            batteryNum4Rbtn.Checked = false;
+        }
+
+        private void batteryNum4Rbtn_Click(object sender, EventArgs e)
+        {
+            batteryNum2Rbtn.Checked = false;
+            batteryNum4Rbtn.Checked = true;
+        }
+
+        private void scanner_move_yesRbtn_Click(object sender, EventArgs e)
+        {
+            scanner_move_yesRbtn.Checked = true;
+            scaner_move_noRbtn.Checked = false;
+        }
+
+        private void scaner_move_noRbtn_Click(object sender, EventArgs e)
+        {
+            scanner_move_yesRbtn.Checked = false;
+            scaner_move_noRbtn.Checked = true;
+        }
     }
 }
