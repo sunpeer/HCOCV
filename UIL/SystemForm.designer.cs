@@ -120,6 +120,11 @@
             this.inBtn = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.onprocessStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.scanner_move_yesRbtn = new System.Windows.Forms.RadioButton();
+            this.scaner_move_noRbtn = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -133,7 +138,7 @@
             // batteryNum2Rbtn
             // 
             this.batteryNum2Rbtn.AutoSize = true;
-            this.batteryNum2Rbtn.Location = new System.Drawing.Point(30, 28);
+            this.batteryNum2Rbtn.Location = new System.Drawing.Point(99, 23);
             this.batteryNum2Rbtn.Name = "batteryNum2Rbtn";
             this.batteryNum2Rbtn.Size = new System.Drawing.Size(65, 16);
             this.batteryNum2Rbtn.TabIndex = 1;
@@ -144,7 +149,7 @@
             // batteryNum4Rbtn
             // 
             this.batteryNum4Rbtn.AutoSize = true;
-            this.batteryNum4Rbtn.Location = new System.Drawing.Point(146, 28);
+            this.batteryNum4Rbtn.Location = new System.Drawing.Point(177, 23);
             this.batteryNum4Rbtn.Name = "batteryNum4Rbtn";
             this.batteryNum4Rbtn.Size = new System.Drawing.Size(65, 16);
             this.batteryNum4Rbtn.TabIndex = 2;
@@ -154,6 +159,11 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.scaner_move_noRbtn);
+            this.groupBox1.Controls.Add(this.scanner_move_yesRbtn);
+            this.groupBox1.Controls.Add(this.label32);
+            this.groupBox1.Controls.Add(this.label28);
+            this.groupBox1.Controls.Add(this.label27);
             this.groupBox1.Controls.Add(this.tech_StdCombox);
             this.groupBox1.Controls.Add(this.batteryNum4Rbtn);
             this.groupBox1.Controls.Add(this.saveBtn);
@@ -161,7 +171,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(3, 208);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(437, 84);
+            this.groupBox1.Size = new System.Drawing.Size(437, 135);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备工艺参数设置";
@@ -173,7 +183,7 @@
             "VK2698B5",
             "VK405974",
             "VK466574"});
-            this.tech_StdCombox.Location = new System.Drawing.Point(31, 52);
+            this.tech_StdCombox.Location = new System.Drawing.Point(103, 52);
             this.tech_StdCombox.Name = "tech_StdCombox";
             this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
             this.tech_StdCombox.TabIndex = 4;
@@ -181,7 +191,7 @@
             // 
             // saveBtn
             // 
-            this.saveBtn.Location = new System.Drawing.Point(165, 52);
+            this.saveBtn.Location = new System.Drawing.Point(247, 50);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(75, 23);
             this.saveBtn.TabIndex = 3;
@@ -514,16 +524,16 @@
             this.groupBox3.Controls.Add(this.statisticTxtBox);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox3.Location = new System.Drawing.Point(3, 377);
+            this.groupBox3.Location = new System.Drawing.Point(3, 408);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(437, 100);
+            this.groupBox3.Size = new System.Drawing.Size(437, 69);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "连续不合格设置";
             // 
             // errorAlwaysSaveBtn
             // 
-            this.errorAlwaysSaveBtn.Location = new System.Drawing.Point(152, 60);
+            this.errorAlwaysSaveBtn.Location = new System.Drawing.Point(354, 25);
             this.errorAlwaysSaveBtn.Name = "errorAlwaysSaveBtn";
             this.errorAlwaysSaveBtn.Size = new System.Drawing.Size(75, 23);
             this.errorAlwaysSaveBtn.TabIndex = 4;
@@ -534,7 +544,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(203, 30);
+            this.label7.Location = new System.Drawing.Point(194, 28);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(29, 12);
             this.label7.TabIndex = 3;
@@ -542,14 +552,14 @@
             // 
             // errorRateTxtBox
             // 
-            this.errorRateTxtBox.Location = new System.Drawing.Point(250, 27);
+            this.errorRateTxtBox.Location = new System.Drawing.Point(229, 25);
             this.errorRateTxtBox.Name = "errorRateTxtBox";
             this.errorRateTxtBox.Size = new System.Drawing.Size(100, 21);
             this.errorRateTxtBox.TabIndex = 2;
             // 
             // statisticTxtBox
             // 
-            this.statisticTxtBox.Location = new System.Drawing.Point(78, 24);
+            this.statisticTxtBox.Location = new System.Drawing.Point(72, 24);
             this.statisticTxtBox.Name = "statisticTxtBox";
             this.statisticTxtBox.Size = new System.Drawing.Size(100, 21);
             this.statisticTxtBox.TabIndex = 1;
@@ -557,7 +567,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(19, 27);
+            this.label6.Location = new System.Drawing.Point(13, 27);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(53, 12);
             this.label6.TabIndex = 0;
@@ -598,9 +608,9 @@
             this.groupBox2.Controls.Add(this.batterDisplayNumTxtBox);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 292);
+            this.groupBox2.Location = new System.Drawing.Point(3, 343);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(437, 85);
+            this.groupBox2.Size = new System.Drawing.Size(437, 65);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "主界面信息栏显示数据量";
@@ -608,7 +618,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(250, 58);
+            this.label10.Location = new System.Drawing.Point(250, 47);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(17, 12);
             this.label10.TabIndex = 6;
@@ -616,7 +626,7 @@
             // 
             // logDisplayNumTxtBox
             // 
-            this.logDisplayNumTxtBox.Location = new System.Drawing.Point(145, 54);
+            this.logDisplayNumTxtBox.Location = new System.Drawing.Point(145, 43);
             this.logDisplayNumTxtBox.Name = "logDisplayNumTxtBox";
             this.logDisplayNumTxtBox.Size = new System.Drawing.Size(100, 21);
             this.logDisplayNumTxtBox.TabIndex = 5;
@@ -624,7 +634,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(49, 58);
+            this.label11.Location = new System.Drawing.Point(49, 47);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(89, 12);
             this.label11.TabIndex = 4;
@@ -633,7 +643,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(250, 34);
+            this.label9.Location = new System.Drawing.Point(250, 23);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(17, 12);
             this.label9.TabIndex = 3;
@@ -641,7 +651,7 @@
             // 
             // displayNumTxtBtn
             // 
-            this.displayNumTxtBtn.Location = new System.Drawing.Point(300, 39);
+            this.displayNumTxtBtn.Location = new System.Drawing.Point(300, 28);
             this.displayNumTxtBtn.Name = "displayNumTxtBtn";
             this.displayNumTxtBtn.Size = new System.Drawing.Size(75, 23);
             this.displayNumTxtBtn.TabIndex = 2;
@@ -651,7 +661,7 @@
             // 
             // batterDisplayNumTxtBox
             // 
-            this.batterDisplayNumTxtBox.Location = new System.Drawing.Point(145, 30);
+            this.batterDisplayNumTxtBox.Location = new System.Drawing.Point(145, 19);
             this.batterDisplayNumTxtBox.Name = "batterDisplayNumTxtBox";
             this.batterDisplayNumTxtBox.Size = new System.Drawing.Size(100, 21);
             this.batterDisplayNumTxtBox.TabIndex = 1;
@@ -659,7 +669,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(51, 34);
+            this.label8.Location = new System.Drawing.Point(51, 23);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(89, 12);
             this.label8.TabIndex = 0;
@@ -1061,6 +1071,55 @@
             this.onprocessStripStatusLabel.Name = "onprocessStripStatusLabel";
             this.onprocessStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(22, 25);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(77, 12);
+            this.label27.TabIndex = 5;
+            this.label27.Text = "吸塑盒大小：";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(22, 57);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(77, 12);
+            this.label28.TabIndex = 6;
+            this.label28.Text = "吸塑盒型号：";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(261, 25);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(89, 12);
+            this.label32.TabIndex = 7;
+            this.label32.Text = "是否电机横移：";
+            // 
+            // scanner_move_yesRbtn
+            // 
+            this.scanner_move_yesRbtn.AutoSize = true;
+            this.scanner_move_yesRbtn.Location = new System.Drawing.Point(348, 24);
+            this.scanner_move_yesRbtn.Name = "scanner_move_yesRbtn";
+            this.scanner_move_yesRbtn.Size = new System.Drawing.Size(35, 16);
+            this.scanner_move_yesRbtn.TabIndex = 8;
+            this.scanner_move_yesRbtn.TabStop = true;
+            this.scanner_move_yesRbtn.Text = "是";
+            this.scanner_move_yesRbtn.UseVisualStyleBackColor = true;
+            // 
+            // scaner_move_noRbtn
+            // 
+            this.scaner_move_noRbtn.AutoSize = true;
+            this.scaner_move_noRbtn.Location = new System.Drawing.Point(395, 24);
+            this.scaner_move_noRbtn.Name = "scaner_move_noRbtn";
+            this.scaner_move_noRbtn.Size = new System.Drawing.Size(35, 16);
+            this.scaner_move_noRbtn.TabIndex = 9;
+            this.scaner_move_noRbtn.TabStop = true;
+            this.scaner_move_noRbtn.Text = "否";
+            this.scaner_move_noRbtn.UseVisualStyleBackColor = true;
+            // 
             // SystemForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1189,5 +1248,10 @@
         private System.Windows.Forms.Label minKLabel;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.ComboBox tech_StdCombox;
+        private System.Windows.Forms.RadioButton scaner_move_noRbtn;
+        private System.Windows.Forms.RadioButton scanner_move_yesRbtn;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label27;
     }
 }

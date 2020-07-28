@@ -27,6 +27,8 @@ namespace UIL
         {
             batteryNum4Rbtn.Checked = (app.curConfig.BatteryNum == 4) ? true : false;
             batteryNum2Rbtn.Checked = (app.curConfig.BatteryNum == 4) ? false : true;
+            scaner_move_noRbtn.Checked = (app.curConfig.scaner_move_enable == "0") ? true : false;
+            scanner_move_yesRbtn.Checked = (app.curConfig.scaner_move_enable == "1") ? true : false;
             batterDisplayNumTxtBox.Text = app.curConfig.BatteryDisplayNum.ToString();
             logDisplayNumTxtBox.Text = app.curConfig.LogDisplayNum.ToString();
             errorRateTxtBox.Text = app.curConfig.ErrorRate.ToString();
@@ -129,6 +131,14 @@ namespace UIL
                 app.SetScanNum(4, true);
                 SetScanNumEvent?.Invoke(4);
                 MessageBox.Show("设置成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            if(scaner_move_noRbtn.Checked)
+            {
+                app.curConfig.scaner_move_enable = "0";
+            }
+            else if(scanner_move_yesRbtn.Checked)
+            {
+                app.curConfig.scaner_move_enable = "1";
             }
         }
         private void adjButton_Click(object sender, EventArgs e)
@@ -245,15 +255,33 @@ namespace UIL
                 return;
             }
             scanStartBtn.Enabled = false;
-            string sns;
             app.SetScanNum(app.curConfig.BatteryNum, false);
-            app.sr2000w.DataReceivedEventHandler = Sr2000wGet;
-            startTime = DateTime.Now.Ticks;
-            sns=app.sr2000w.SendCmd("LON");
-            if (app.CheckIsSns(sns))
+            if (app.curConfig.scaner_move_enable=="0")
             {
-                app.sr2000w.DataReceivedEventHandler = null;
-                Sr2000wGet(sns);
+                string sns;
+                app.sr2000w.DataReceivedEventHandler = Sr2000wGet;
+                startTime = DateTime.Now.Ticks;
+                sns = app.sr2000w.SendCmd("LON");
+                if (app.CheckIsSns(sns))
+                {
+                    app.sr2000w.DataReceivedEventHandler = null;
+                    Sr2000wGet(sns);
+                }
+            }
+            else if(app.curConfig.scaner_move_enable=="1")
+            {
+                app.sr2000w.DataReceivedEventHandler = Sr2000wGet;
+                app.sr2000w.SendCmd("LON");
+                if(app.curConfig.scaner_position=="0")
+                {
+                    app.fx5u.SendCmd("D177");
+                    app.curConfig.scaner_position = "2";
+                }
+                else if(app.curConfig.scaner_position=="2")
+                {
+                    app.fx5u.SendCmd("D176");
+                    app.curConfig.scaner_position = "0";
+                }
             }
         }
         private void Sr2000wGet(string sns)
@@ -261,13 +289,16 @@ namespace UIL
             this.Invoke(new Action(() =>
             {
                 scanStartBtn.Enabled = true;
-                onprocessStripStatusLabel.Text = "已经扫到码了,建议的扫码超时时间已生成";
-                stopTime = DateTime.Now.Ticks;
-                TimeSpan timeInterval = new TimeSpan(stopTime - startTime);
-                double millSr2000wTimeout = timeInterval.TotalMilliseconds;
-                double dallTime = millSr2000wTimeout + ProbeSupportOnPositionTime;
-                int iallTime = Convert.ToInt32(dallTime) + 1000;
-                sr2000wTimetxtBox.Text = iallTime.ToString();
+                if(app.curConfig.scaner_move_enable=="0")
+                {
+                    onprocessStripStatusLabel.Text = "已经扫到码了,建议的扫码超时时间已生成";
+                    stopTime = DateTime.Now.Ticks;
+                    TimeSpan timeInterval = new TimeSpan(stopTime - startTime);
+                    double millSr2000wTimeout = timeInterval.TotalMilliseconds;
+                    double dallTime = millSr2000wTimeout + ProbeSupportOnPositionTime;
+                    int iallTime = Convert.ToInt32(dallTime) + 1000;
+                    sr2000wTimetxtBox.Text = iallTime.ToString();
+                }
                 //把码显示出来
                 sns = sns.Substring(0, sns.Length - 1);
                 string[] snArray = sns.Split(',');

@@ -1708,41 +1708,59 @@ namespace BLL
             //释放计时器
             sr2000wTimer?.Stop();
             sr2000wTimer?.Dispose();
-            scanNum+=1;
             //取消所有扫码枪收到信息触发事件
             sr2000w.DataReceivedEventHandler = null;
             //超时结束读码
             sr2000w.SendCmd("LOFF");
-            if(scanNum<tryScanNum)
+            if (curConfig.scaner_move_enable == "0")
             {
-                sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
-                sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
-                sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
-                sr2000wTimer.AutoReset = false;
-                sr2000wTimer.Start();
-                string sns = sr2000w.SendCmd("LON");
-                if (CheckIsSns(sns))//如果是立即返回了
+                scanNum += 1;
+                if (scanNum < tryScanNum)
                 {
-                    sr2000w.DataReceivedEventHandler = null;
-                    Sr2000wGetSns(sns);
+                    sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
+                    sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                    sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
+                    sr2000wTimer.AutoReset = false;
+                    sr2000wTimer.Start();
+                    string sns = sr2000w.SendCmd("LON");
+                    if (CheckIsSns(sns))//如果是立即返回了
+                    {
+                        sr2000w.DataReceivedEventHandler = null;
+                        Sr2000wGetSns(sns);
+                    }
+                    TryScanEvent.BeginInvoke(scanNum, null, null);
+                    return;
                 }
-                TryScanEvent.BeginInvoke(scanNum,null,null);
-                return;
+                if (curLevel)
+                    //不在扫码了
+                    fx5u.ResetRegister("D123", 0);
+                else
+                    //不在扫码了
+                    fx5u.ResetRegister("D124", 0);
+                //三色灯报警
+                fx5u.SendCmd("D141");
+                //主界面显示错误信息
+                //string errMessage = Sr2000wErr("扫码超时");
+                ErrorEventHandler?.BeginInvoke("扫码枪扫码超时", null, null);
+                UploadErrorA("A-001", "扫码超时");
             }
-            if (curLevel)
-                //不在扫码了
-                fx5u.ResetRegister("D123", 0);
-            else
-                //不在扫码了
-                fx5u.ResetRegister("D124", 0);
-            //三色灯报警
-            fx5u.SendCmd("D141");
-            //主界面显示错误信息
-            //string errMessage = Sr2000wErr("扫码超时");
-            ErrorEventHandler?.BeginInvoke("扫码枪扫码超时", null, null);
-            UploadErrorA("A-001", "扫码超时");
+            else if(curConfig.scaner_move_enable=="1")  //设置了横移
+            {
+                if (curLevel)
+                    //不在扫码了
+                    fx5u.ResetRegister("D123", 0);
+                else
+                    //不在扫码了
+                    fx5u.ResetRegister("D124", 0);
+                //三色灯报警
+                fx5u.SendCmd("D141");
+                //主界面显示错误信息
+                //string errMessage = Sr2000wErr("扫码超时");
+                ErrorEventHandler?.BeginInvoke("扫码枪扫码超时", null, null);
+                UploadErrorA("A-001", "扫码超时");
+            }
         }
-        
+
         private void AutoRun(PlcLabel label)
         {
             string sns = "";
@@ -1753,7 +1771,7 @@ namespace BLL
                     fx5u.ResetRegister("D101", 0);
                     curLevel = true;
                     //normalFlag = true;
-                    logStreamWriter.WriteLine(DateTime.Now.ToString()+"上层电池到位");
+                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "上层电池到位");
                     ledFlasher.ResetFlash();
                     //上层电池指示灯全部复位
                     int iStart = (curConfig.BatteryNum == 4) ? 44 : 45;
@@ -1763,35 +1781,63 @@ namespace BLL
                         fx5u.ResetRegister(labelTemp.ToString(), 0);
                         iStart++;
                     }
-                    //statusUpload.UploadStatus(DeviceStatus.A);
-                    //curLevel = true;
-                    //订阅扫码枪收到信息的事件
-                    sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
-                    BatteryOnPositionEvent?.BeginInvoke(null,null);
-                    if(this.isNotFullBattery)
+                    if (curConfig.scaner_move_enable == "0")   //如果不用横移，用以前的代码可以应付
                     {
-                        //设置计时器
-                        sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut-1000);
-                        sr2000wTimer.Elapsed += Sr2000wLoff;
+                        //statusUpload.UploadStatus(DeviceStatus.A);
+                        //curLevel = true;
+                        //订阅扫码枪收到信息的事件
+                        sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
+                        BatteryOnPositionEvent?.BeginInvoke(null, null);
+                        if (this.isNotFullBattery)
+                        {
+                            //设置计时器
+                            sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut - 1000);
+                            sr2000wTimer.Elapsed += Sr2000wLoff;
+                        }
+                        else
+                        {
+                            scanNum = 0;
+                            sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                            sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
+                        }
+                        sr2000wTimer.AutoReset = false;
+                        sr2000wTimer.Start();
+                        //扫码
+                        SendFx5uCmd(PlcLabel.D123);//上层电池在扫码
+                        sns = sr2000w.SendCmd("LON");
+                        if (CheckIsSns(sns))//如果是立即返回了
+                        {
+                            sr2000w.DataReceivedEventHandler = null;
+                            Sr2000wGetSns(sns);
+                        }
+                        fx5u.EventMeditator = AutoRun;
+                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "设置扫码结束");
                     }
-                    else
+                    else if (curConfig.scaner_move_enable == "1")       //电机需要横移
                     {
-                        scanNum = 0;
-                        sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                        //先发送扫码指令，然后发送横移指令
+                        //发送扫码指令
+                        sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
+                        BatteryOnPositionEvent?.BeginInvoke(null, null);
+                        sr2000wTimer = new System.Timers.Timer(8000);
                         sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
+                        sr2000wTimer.AutoReset = false;
+                        sr2000wTimer.Start();
+                        SendFx5uCmd(PlcLabel.D123);//上层电池在扫码
+                        sns = sr2000w.SendCmd("LON");
+                        fx5u.EventMeditator = AutoRun;
+                        //发送横移指令
+                        if(curConfig.scaner_position=="0")  //扫码枪在最左边
+                        {
+                            fx5u.SendCmd("D177");
+                            curConfig.scaner_position = "2";
+                        }
+                        else if(curConfig.scaner_position=="2") //扫码枪在最右边
+                        {
+                            fx5u.SendCmd("D176");
+                            curConfig.scaner_position = "0";
+                        }
                     }
-                    sr2000wTimer.AutoReset = false;
-                    sr2000wTimer.Start();
-                    //扫码
-                    SendFx5uCmd(PlcLabel.D123);//上层电池在扫码
-                    sns = sr2000w.SendCmd("LON");
-                    if (CheckIsSns(sns))//如果是立即返回了
-                    {
-                        sr2000w.DataReceivedEventHandler = null;
-                        Sr2000wGetSns(sns);
-                    }
-                    fx5u.EventMeditator = AutoRun;
-                    logStreamWriter.WriteLine(DateTime.Now.ToString()+"设置扫码结束");
                     break;
                 case PlcLabel.D103: //托板上升到位1
                     fx5u.EventMeditator = null;
@@ -1896,33 +1942,60 @@ namespace BLL
                     BatteryOnPositionEvent?.BeginInvoke(null,null);
                     //statusUpload.UploadStatus(DeviceStatus.A);
                     //设置计时器
-                    if (this.isNotFullBattery)
+                    if(curConfig.scaner_move_enable=="0")
                     {
-                        //设置计时器
-                        sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut - 1000);
-                        sr2000wTimer.Elapsed += Sr2000wLoff;
+                        if (this.isNotFullBattery)
+                        {
+                            //设置计时器
+                            sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut - 1000);
+                            sr2000wTimer.Elapsed += Sr2000wLoff;
+                        }
+                        else
+                        {
+                            scanNum = 0;
+                            sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                            sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
+                        }
+                        sr2000wTimer.AutoReset = false;
+                        sr2000wTimer.Start();
+                        //扫码
+                        //订阅扫码枪收到信息的事件
+                        sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
+                        //扫码
+                        SendFx5uCmd(PlcLabel.D124);//下层在扫码
+                        sns = sr2000w.SendCmd("LON");
+                        if (CheckIsSns(sns))
+                        {
+                            sr2000w.DataReceivedEventHandler = null;
+                            Sr2000wGetSns(sns);
+                        }
+                        fx5u.EventMeditator = AutoRun;
+                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "扫码设置完毕");
                     }
-                    else
+                   else if(curConfig.scaner_move_enable=="1")
                     {
-                        scanNum = 0;
-                        sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                        //先发送扫码指令，然后发送横移指令
+                        //发送扫码指令
+                        sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
+                        sr2000wTimer = new System.Timers.Timer(8000);
                         sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
+                        sr2000wTimer.AutoReset = false;
+                        sr2000wTimer.Start();
+                        SendFx5uCmd(PlcLabel.D124);//上层电池在扫码
+                        sns = sr2000w.SendCmd("LON");
+                        fx5u.EventMeditator = AutoRun;
+                        //发送横移指令
+                        if (curConfig.scaner_position == "0")  //扫码枪在最左边
+                        {
+                            fx5u.SendCmd("D177");
+                            curConfig.scaner_position = "2";
+                        }
+                        else if (curConfig.scaner_position == "2") //扫码枪在最右边
+                        {
+                            fx5u.SendCmd("D176");
+                            curConfig.scaner_position = "0";
+                        }
                     }
-                    sr2000wTimer.AutoReset = false;
-                    sr2000wTimer.Start();
-                    //扫码
-                    //订阅扫码枪收到信息的事件
-                    sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
-                    //扫码
-                    SendFx5uCmd(PlcLabel.D124);//下层在扫码
-                    sns = sr2000w.SendCmd("LON");
-                    if (CheckIsSns(sns))
-                    {
-                        sr2000w.DataReceivedEventHandler = null;
-                        Sr2000wGetSns(sns);
-                    }
-                    fx5u.EventMeditator = AutoRun;
-                    logStreamWriter.WriteLine(DateTime.Now.ToString()+"扫码设置完毕");
                     break;
                 case PlcLabel.D114://托板上升到位2
                     fx5u.EventMeditator = null;

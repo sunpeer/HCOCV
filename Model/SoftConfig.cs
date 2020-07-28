@@ -38,6 +38,8 @@ namespace Model
         public double ErrorRate { get; set; }
         public int LogDisplayNum { get; set; }
         public int BatteryDisplayNum { get; set; }
+        public string scaner_move_enable { get; set; } //0：不需要横移，1：需要横移
+        public string scaner_position { get; set; }    //0：最左边，1：中间，2：最右边
         public string temperatureCom { get; set; }
         public string resouce_id = "";
         public string tech_no = "";
@@ -90,6 +92,8 @@ namespace Model
             config.maxK = double.Parse(ConfigurationManager.AppSettings["maxK"]);
             config.minK = double.Parse(ConfigurationManager.AppSettings["minK"]);
             config.tech_Std = ConfigurationManager.AppSettings["tech_Std"];
+            config.scaner_move_enable = ConfigurationManager.AppSettings["scaner_move_enable"];
+            config.scaner_position = ConfigurationManager.AppSettings["scaner_position"];
             return config;
         }
 
@@ -130,6 +134,8 @@ namespace Model
             SetAppSettingsValue("minK", config.minK.ToString(),ref xNode);
             SetAppSettingsValue("maxK", config.maxK.ToString(), ref xNode);
             SetAppSettingsValue("tech_Std", config.tech_Std, ref xNode);
+            SetAppSettingsValue("scaner_position", config.scaner_position, ref xNode);
+            SetAppSettingsValue("scaner_move_enable", config.scaner_move_enable, ref xNode);
             xDoc.Save(dir.FullName + @"\UIL.exe.config");
         }
     }
