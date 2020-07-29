@@ -125,6 +125,9 @@
             this.inBtn = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.onprocessStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cur_sacnner_position_combox = new System.Windows.Forms.ComboBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.set_Scanner_position = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -163,6 +166,9 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.set_Scanner_position);
+            this.groupBox1.Controls.Add(this.label33);
+            this.groupBox1.Controls.Add(this.cur_sacnner_position_combox);
             this.groupBox1.Controls.Add(this.scaner_move_noRbtn);
             this.groupBox1.Controls.Add(this.scanner_move_yesRbtn);
             this.groupBox1.Controls.Add(this.label32);
@@ -239,7 +245,8 @@
             this.tech_StdCombox.Items.AddRange(new object[] {
             "VK2698B5",
             "VK405974",
-            "VK466574"});
+            "VK466574",
+            "VK386786"});
             this.tech_StdCombox.Location = new System.Drawing.Point(103, 52);
             this.tech_StdCombox.Name = "tech_StdCombox";
             this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
@@ -1128,6 +1135,37 @@
             this.onprocessStripStatusLabel.Name = "onprocessStripStatusLabel";
             this.onprocessStripStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
+            // cur_sacnner_position_combox
+            // 
+            this.cur_sacnner_position_combox.FormattingEnabled = true;
+            this.cur_sacnner_position_combox.Items.AddRange(new object[] {
+            "最左边",
+            "中间",
+            "最右边"});
+            this.cur_sacnner_position_combox.Location = new System.Drawing.Point(135, 95);
+            this.cur_sacnner_position_combox.Name = "cur_sacnner_position_combox";
+            this.cur_sacnner_position_combox.Size = new System.Drawing.Size(121, 20);
+            this.cur_sacnner_position_combox.TabIndex = 10;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(19, 98);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(113, 12);
+            this.label33.TabIndex = 11;
+            this.label33.Text = "当前电机位置纠正：";
+            // 
+            // set_Scanner_position
+            // 
+            this.set_Scanner_position.Location = new System.Drawing.Point(265, 93);
+            this.set_Scanner_position.Name = "set_Scanner_position";
+            this.set_Scanner_position.Size = new System.Drawing.Size(122, 23);
+            this.set_Scanner_position.TabIndex = 12;
+            this.set_Scanner_position.Text = "设置当前电机位置";
+            this.set_Scanner_position.UseVisualStyleBackColor = true;
+            this.set_Scanner_position.Click += new System.EventHandler(this.set_Scanner_position_Click);
+            // 
             // SystemForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1261,5 +1299,8 @@
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Button set_Scanner_position;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.ComboBox cur_sacnner_position_combox;
     }
 }

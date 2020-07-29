@@ -107,11 +107,17 @@ namespace UIL
                 systemForm = new SystemForm(app);
                 systemForm.SetTechStandardEvent = new Action<bool>(SetTechStandardCallBack);
                 systemForm.SetScanNumEvent = SetScanNumCallBack;
+                systemForm.SetScannerPositionEvent = SetScannerPostionCallBack;
                 systemForm.SetSrTime = sr2000wTimOutSetEvent;
                 systemForm.ShowDialog();
             }
             else MessageBox.Show("设备未停机，请先停止运行再操作！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+        private void SetScannerPositionCallBack(string position)
+        {
+            scanner_move_desc.Text = "扫码枪在" + position;
+        }
+
         #endregion
         
         List<Label> snLabelList = null;

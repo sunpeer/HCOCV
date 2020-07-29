@@ -257,6 +257,7 @@
             this.label63 = new System.Windows.Forms.Label();
             this.curTemLabel = new System.Windows.Forms.Label();
             this.label66 = new System.Windows.Forms.Label();
+            this.scanner_move_desc = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.batterydatagridview)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -1689,9 +1690,9 @@
             // 
             // PLCstartbtn
             // 
-            this.PLCstartbtn.Location = new System.Drawing.Point(782, 630);
+            this.PLCstartbtn.Location = new System.Drawing.Point(786, 633);
             this.PLCstartbtn.Name = "PLCstartbtn";
-            this.PLCstartbtn.Size = new System.Drawing.Size(120, 38);
+            this.PLCstartbtn.Size = new System.Drawing.Size(207, 38);
             this.PLCstartbtn.TabIndex = 0;
             this.PLCstartbtn.Text = "启动";
             this.PLCstartbtn.UseVisualStyleBackColor = true;
@@ -2505,7 +2506,7 @@
             // 
             // ledResetBtn
             // 
-            this.ledResetBtn.Location = new System.Drawing.Point(913, 604);
+            this.ledResetBtn.Location = new System.Drawing.Point(913, 598);
             this.ledResetBtn.Name = "ledResetBtn";
             this.ledResetBtn.Size = new System.Drawing.Size(80, 23);
             this.ledResetBtn.TabIndex = 18;
@@ -2558,12 +2559,22 @@
             this.label66.TabIndex = 22;
             this.label66.Text = "℃";
             // 
+            // scanner_move_desc
+            // 
+            this.scanner_move_desc.AutoSize = true;
+            this.scanner_move_desc.Location = new System.Drawing.Point(679, 657);
+            this.scanner_move_desc.Name = "scanner_move_desc";
+            this.scanner_move_desc.Size = new System.Drawing.Size(77, 12);
+            this.scanner_move_desc.TabIndex = 23;
+            this.scanner_move_desc.Text = "扫码枪在中间";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1020, 704);
+            this.Controls.Add(this.scanner_move_desc);
             this.Controls.Add(this.label66);
             this.Controls.Add(this.curTemLabel);
             this.Controls.Add(this.label63);
@@ -2841,6 +2852,7 @@
         private System.Windows.Forms.Label label71;
         private System.Windows.Forms.Label todayProductionCounterLabel;
         private System.Windows.Forms.Label label81;
+        private System.Windows.Forms.Label scanner_move_desc;
     }
 }
 

@@ -29,6 +29,18 @@ namespace UIL
             batteryNum2Rbtn.Checked = (app.curConfig.BatteryNum == 4) ? false : true;
             scaner_move_noRbtn.Checked = (app.curConfig.scaner_move_enable == "0") ? true : false;
             scanner_move_yesRbtn.Checked = (app.curConfig.scaner_move_enable == "1") ? true : false;
+            switch(app.curConfig.scaner_position)
+            {
+                case "0":
+                    cur_sacnner_position_combox.SelectedItem = cur_sacnner_position_combox.Items[0];
+                    break;
+                case "1":
+                    cur_sacnner_position_combox.SelectedItem = cur_sacnner_position_combox.Items[1];
+                    break;
+                case "2":
+                    cur_sacnner_position_combox.SelectedItem = cur_sacnner_position_combox.Items[2];
+                    break;
+            }
             batterDisplayNumTxtBox.Text = app.curConfig.BatteryDisplayNum.ToString();
             logDisplayNumTxtBox.Text = app.curConfig.LogDisplayNum.ToString();
             errorRateTxtBox.Text = app.curConfig.ErrorRate.ToString();
@@ -94,6 +106,7 @@ namespace UIL
         }
         public Action<bool> SetTechStandardEvent;
         public Action<int> SetScanNumEvent;
+        public Action<string> SetScannerPositionEvent;
         private void saveBtn_Click(object sender, EventArgs e)
         {
             switch(tech_StdCombox.Text)
@@ -119,6 +132,13 @@ namespace UIL
                     app.fx5u.ResetRegister("M502", 0);
                     app.curConfig.tech_Std = "VK466574";
                     break;
+                case "VK386786":
+                    app.fx5u.ResetRegister("M503", 0);
+                    Thread.Sleep(100);
+                    app.fx5u.ResetRegister("M503", 1);
+                    app.fx5u.ResetRegister("M503", 0);
+                    app.curConfig.tech_Std = "VK386786";
+                    break;
             }
             if(batteryNum2Rbtn.Checked)
             {
@@ -134,16 +154,18 @@ namespace UIL
             }
             if(scaner_move_noRbtn.Checked)
             {
-                app.curConfig.scaner_move_enable = "0";
+                app.curConfig.scaner_move_enable = "0"; //不横移
                 if(app.curConfig.scaner_position=="0")
                 {
                     app.fx5u.SendCmd("D175");
                     app.curConfig.scaner_position = "1";
+                    SetScannerPositionEvent("中间");
                 }
                 else if(app.curConfig.scaner_position=="2")
                 {
                     app.fx5u.SendCmd("D174");
                     app.curConfig.scaner_position = "1";
+                    SetScannerPositionEvent("中间");
                 }
             }
             else if(scanner_move_yesRbtn.Checked)
@@ -153,8 +175,10 @@ namespace UIL
                 {
                     app.fx5u.SendCmd("D174");
                     app.curConfig.scaner_position = "0";
+                    SetScannerPositionEvent("最左边");
                 }
             }
+
         }
         private void adjButton_Click(object sender, EventArgs e)
         {
@@ -630,6 +654,12 @@ namespace UIL
         {
             scanner_move_yesRbtn.Checked = false;
             scaner_move_noRbtn.Checked = true;
+        }
+
+        private void set_Scanner_position_Click(object sender, EventArgs e)
+        {
+            app.curConfig.scaner_position=cur_sacnner_position_combox.SelectedIndex.ToString();
+            SetScannerPositionEvent(cur_sacnner_position_combox.Text);
         }
     }
 }
