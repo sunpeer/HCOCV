@@ -1576,6 +1576,7 @@ namespace BLL
         private bool isNotFullBattery;
         private bool errorFlag;
         public Action<bool> workRunWatchEventHandler;
+        public Action<string> ScannerPositionEvent;
 
         public void ResetLeds()
         {
@@ -1831,11 +1832,13 @@ namespace BLL
                         {
                             fx5u.SendCmd("D177");
                             curConfig.scaner_position = "2";
+                            ScannerPositionEvent.Invoke("最右边");
                         }
                         else if(curConfig.scaner_position=="2") //扫码枪在最右边
                         {
                             fx5u.SendCmd("D176");
                             curConfig.scaner_position = "0";
+                            ScannerPositionEvent.Invoke("最左边");
                         }
                     }
                     break;
@@ -1989,11 +1992,13 @@ namespace BLL
                         {
                             fx5u.SendCmd("D177");
                             curConfig.scaner_position = "2";
+                            ScannerPositionEvent.Invoke("最右边");
                         }
                         else if (curConfig.scaner_position == "2") //扫码枪在最右边
                         {
                             fx5u.SendCmd("D176");
                             curConfig.scaner_position = "0";
+                            ScannerPositionEvent.Invoke("最左边");
                         }
                     }
                     break;

@@ -315,11 +315,13 @@ namespace UIL
                 {
                     app.fx5u.SendCmd("D177");
                     app.curConfig.scaner_position = "2";
+                    SetScannerPositionEvent("最右边");
                 }
                 else if(app.curConfig.scaner_position=="2")
                 {
                     app.fx5u.SendCmd("D176");
                     app.curConfig.scaner_position = "0";
+                    SetScannerPositionEvent("最左边");
                 }
             }
         }

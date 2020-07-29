@@ -115,7 +115,10 @@ namespace UIL
         }
         private void SetScannerPositionCallBack(string position)
         {
-            scanner_move_desc.Text = "扫码枪在" + position;
+            this.Invoke(new Action(() =>
+            {
+                scanner_move_desc.Text = "扫码枪在" + position;
+            }));
         }
 
         #endregion
@@ -431,6 +434,7 @@ namespace UIL
             app.BatteryOnPositionEvent = BatteryOnPositionShowMainFormCallBack;
             app.KeyenceReceivedDataVerifiedEvent = KeyenceReceivedDataVerifiedShowMainFormCallBack;
             app.SendBatteryDownShowEvent = SendBatteryDownShowMainFormCallBack;
+            app.ScannerPositionEvent = SetScannerPositionCallBack;
             app.StopEvent = StopCallBack;
             app.TryScanEvent = TryScanEventShowMainFormCallback;
             bool isBatteryFull = isBatteryNoFullCheckBox.Checked;
@@ -509,6 +513,7 @@ namespace UIL
                 app.KeyenceReceivedDataVerifiedEvent = null;
                 app.SendBatteryDownShowEvent = null;
                 app.StopEvent = null;
+                app.ScannerPositionEvent = null;
                 app.TryScanEvent = null;
                 //制作停止log
                 //app.CreateSystemStopLog();
