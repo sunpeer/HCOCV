@@ -272,6 +272,8 @@ namespace UIL
             Action<Action<bool>> myAsy = new Action<Action<bool>>(app.Login);
             myAsy.BeginInvoke(UserLoginCallBack, null, null);
             todayProductionCounterLabel.Text = app.getProductionNum().ToString();
+            string position = app.curConfig.scaner_position != "0" ? (app.curConfig.scaner_position == "1" ? "中间" : "最右边") : "最左边";
+            SetScannerPositionCallBack(position);
         }
         void GetResourceCallback(bool result)
         {
