@@ -107,7 +107,7 @@ namespace UIL
                 systemForm = new SystemForm(app);
                 systemForm.SetTechStandardEvent = new Action<bool>(SetTechStandardCallBack);
                 systemForm.SetScanNumEvent = SetScanNumCallBack;
-                systemForm.SetScannerPositionEvent = SetScannerPostionCallBack;
+                systemForm.SetScannerPositionEvent = SetScannerPositionCallBack;
                 systemForm.SetSrTime = sr2000wTimOutSetEvent;
                 systemForm.ShowDialog();
             }

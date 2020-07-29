@@ -1819,7 +1819,7 @@ namespace BLL
                         //发送扫码指令
                         sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
                         BatteryOnPositionEvent?.BeginInvoke(null, null);
-                        sr2000wTimer = new System.Timers.Timer(8000);
+                        sr2000wTimer = new System.Timers.Timer(10000);
                         sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
                         sr2000wTimer.AutoReset = false;
                         sr2000wTimer.Start();
@@ -1977,7 +1977,7 @@ namespace BLL
                         //先发送扫码指令，然后发送横移指令
                         //发送扫码指令
                         sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
-                        sr2000wTimer = new System.Timers.Timer(8000);
+                        sr2000wTimer = new System.Timers.Timer(10000);
                         sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
                         sr2000wTimer.AutoReset = false;
                         sr2000wTimer.Start();
