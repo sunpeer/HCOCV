@@ -1840,7 +1840,6 @@ namespace BLL
                             Sr2000wGetSns(sns);
                         }
                         fx5u.EventMeditator = AutoRun;
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "设置扫码结束");
                     }
                     else if (curConfig.scaner_move_enable == "1")       //电机需要横移
                     {
@@ -1870,6 +1869,7 @@ namespace BLL
                             ScannerPositionEvent.Invoke("最左边");
                         }
                     }
+                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "设置扫码结束");
                     break;
                 case PlcLabel.D103: //托板上升到位1
                     fx5u.EventMeditator = null;
@@ -2002,7 +2002,6 @@ namespace BLL
                             Sr2000wGetSns(sns);
                         }
                         fx5u.EventMeditator = AutoRun;
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "扫码设置完毕");
                     }
                    else if(curConfig.scaner_move_enable=="1")
                     {
@@ -2031,6 +2030,7 @@ namespace BLL
                             ScannerPositionEvent.Invoke("最左边");
                         }
                     }
+                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "设置扫码结束");
                     break;
                 case PlcLabel.D114://托板上升到位2
                     fx5u.EventMeditator = null;
