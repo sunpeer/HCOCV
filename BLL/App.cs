@@ -1752,7 +1752,6 @@ namespace BLL
                 {
                     //先发送扫码指令，然后发送横移指令
                     //发送扫码指令
-                    scanNum = 0;
                     sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
                     sr2000wTimer = new System.Timers.Timer(8000);
                     sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
@@ -1853,7 +1852,7 @@ namespace BLL
                         sr2000wTimer.AutoReset = false;
                         sr2000wTimer.Start();
                         SendFx5uCmd(PlcLabel.D123);//上层电池在扫码
-                        sr2000w.SendCmd("LON");
+                        sns=sr2000w.SendCmd("LON");
                         fx5u.EventMeditator = AutoRun;
                         //发送横移指令
                         if(curConfig.scaner_position=="0")  //扫码枪在最左边
@@ -2014,7 +2013,7 @@ namespace BLL
                         sr2000wTimer.AutoReset = false;
                         sr2000wTimer.Start();
                         SendFx5uCmd(PlcLabel.D124);//上层电池在扫码
-                        sr2000w.SendCmd("LON");
+                        sns=sr2000w.SendCmd("LON");
                         fx5u.EventMeditator = AutoRun;
                         //发送横移指令
                         if (curConfig.scaner_position == "0")  //扫码枪在最左边
