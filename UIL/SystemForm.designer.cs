@@ -32,6 +32,9 @@
             this.batteryNum2Rbtn = new System.Windows.Forms.RadioButton();
             this.batteryNum4Rbtn = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.set_Scanner_position = new System.Windows.Forms.Button();
+            this.label33 = new System.Windows.Forms.Label();
+            this.cur_sacnner_position_combox = new System.Windows.Forms.ComboBox();
             this.scaner_move_noRbtn = new System.Windows.Forms.RadioButton();
             this.scanner_move_yesRbtn = new System.Windows.Forms.RadioButton();
             this.label32 = new System.Windows.Forms.Label();
@@ -125,9 +128,6 @@
             this.inBtn = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.onprocessStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.cur_sacnner_position_combox = new System.Windows.Forms.ComboBox();
-            this.label33 = new System.Windows.Forms.Label();
-            this.set_Scanner_position = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -186,6 +186,37 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备工艺参数设置";
             // 
+            // set_Scanner_position
+            // 
+            this.set_Scanner_position.Location = new System.Drawing.Point(265, 93);
+            this.set_Scanner_position.Name = "set_Scanner_position";
+            this.set_Scanner_position.Size = new System.Drawing.Size(122, 23);
+            this.set_Scanner_position.TabIndex = 12;
+            this.set_Scanner_position.Text = "设置当前电机位置";
+            this.set_Scanner_position.UseVisualStyleBackColor = true;
+            this.set_Scanner_position.Click += new System.EventHandler(this.set_Scanner_position_Click);
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(19, 98);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(113, 12);
+            this.label33.TabIndex = 11;
+            this.label33.Text = "当前电机位置纠正：";
+            // 
+            // cur_sacnner_position_combox
+            // 
+            this.cur_sacnner_position_combox.FormattingEnabled = true;
+            this.cur_sacnner_position_combox.Items.AddRange(new object[] {
+            "最左边",
+            "中间",
+            "最右边"});
+            this.cur_sacnner_position_combox.Location = new System.Drawing.Point(135, 95);
+            this.cur_sacnner_position_combox.Name = "cur_sacnner_position_combox";
+            this.cur_sacnner_position_combox.Size = new System.Drawing.Size(121, 20);
+            this.cur_sacnner_position_combox.TabIndex = 10;
+            // 
             // scaner_move_noRbtn
             // 
             this.scaner_move_noRbtn.AutoCheck = false;
@@ -229,6 +260,7 @@
             this.label28.Size = new System.Drawing.Size(77, 12);
             this.label28.TabIndex = 6;
             this.label28.Text = "吸塑盒型号：";
+            this.label28.Visible = false;
             // 
             // label27
             // 
@@ -252,6 +284,7 @@
             this.tech_StdCombox.Size = new System.Drawing.Size(121, 20);
             this.tech_StdCombox.TabIndex = 4;
             this.tech_StdCombox.Text = "VK2698B5";
+            this.tech_StdCombox.Visible = false;
             // 
             // saveBtn
             // 
@@ -1134,37 +1167,6 @@
             // 
             this.onprocessStripStatusLabel.Name = "onprocessStripStatusLabel";
             this.onprocessStripStatusLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // cur_sacnner_position_combox
-            // 
-            this.cur_sacnner_position_combox.FormattingEnabled = true;
-            this.cur_sacnner_position_combox.Items.AddRange(new object[] {
-            "最左边",
-            "中间",
-            "最右边"});
-            this.cur_sacnner_position_combox.Location = new System.Drawing.Point(135, 95);
-            this.cur_sacnner_position_combox.Name = "cur_sacnner_position_combox";
-            this.cur_sacnner_position_combox.Size = new System.Drawing.Size(121, 20);
-            this.cur_sacnner_position_combox.TabIndex = 10;
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(19, 98);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(113, 12);
-            this.label33.TabIndex = 11;
-            this.label33.Text = "当前电机位置纠正：";
-            // 
-            // set_Scanner_position
-            // 
-            this.set_Scanner_position.Location = new System.Drawing.Point(265, 93);
-            this.set_Scanner_position.Name = "set_Scanner_position";
-            this.set_Scanner_position.Size = new System.Drawing.Size(122, 23);
-            this.set_Scanner_position.TabIndex = 12;
-            this.set_Scanner_position.Text = "设置当前电机位置";
-            this.set_Scanner_position.UseVisualStyleBackColor = true;
-            this.set_Scanner_position.Click += new System.EventHandler(this.set_Scanner_position_Click);
             // 
             // SystemForm
             // 

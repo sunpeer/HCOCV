@@ -109,37 +109,37 @@ namespace UIL
         public Action<string> SetScannerPositionEvent;
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            switch(tech_StdCombox.Text)
-            {
-                case "VK2698B5":
-                    app.fx5u.ResetRegister("M500", 0);
-                    Thread.Sleep(100);
-                    app.fx5u.ResetRegister("M500", 1);
-                    app.fx5u.ResetRegister("M500", 0);
-                    app.curConfig.tech_Std = "VK2698B5";
-                    break;
-                case "VK405974":
-                    app.fx5u.ResetRegister("M501", 0);
-                    Thread.Sleep(100);
-                    app.fx5u.ResetRegister("M501", 1);
-                    app.fx5u.ResetRegister("M501", 0);
-                    app.curConfig.tech_Std = "VK405974";
-                    break;
-                case "VK466574":
-                    app.fx5u.ResetRegister("M502", 0);
-                    Thread.Sleep(100);
-                    app.fx5u.ResetRegister("M502", 1);
-                    app.fx5u.ResetRegister("M502", 0);
-                    app.curConfig.tech_Std = "VK466574";
-                    break;
-                case "VK386786":
-                    app.fx5u.ResetRegister("M503", 0);
-                    Thread.Sleep(100);
-                    app.fx5u.ResetRegister("M503", 1);
-                    app.fx5u.ResetRegister("M503", 0);
-                    app.curConfig.tech_Std = "VK386786";
-                    break;
-            }
+            //switch(tech_StdCombox.Text)
+            //{
+            //    case "VK2698B5":
+            //        app.fx5u.ResetRegister("M500", 0);
+            //        Thread.Sleep(100);
+            //        app.fx5u.ResetRegister("M500", 1);
+            //        app.fx5u.ResetRegister("M500", 0);
+            //        app.curConfig.tech_Std = "VK2698B5";
+            //        break;
+            //    case "VK405974":
+            //        app.fx5u.ResetRegister("M501", 0);
+            //        Thread.Sleep(100);
+            //        app.fx5u.ResetRegister("M501", 1);
+            //        app.fx5u.ResetRegister("M501", 0);
+            //        app.curConfig.tech_Std = "VK405974";
+            //        break;
+            //    case "VK466574":
+            //        app.fx5u.ResetRegister("M502", 0);
+            //        Thread.Sleep(100);
+            //        app.fx5u.ResetRegister("M502", 1);
+            //        app.fx5u.ResetRegister("M502", 0);
+            //        app.curConfig.tech_Std = "VK466574";
+            //        break;
+            //    case "VK386786":
+            //        app.fx5u.ResetRegister("M503", 0);
+            //        Thread.Sleep(100);
+            //        app.fx5u.ResetRegister("M503", 1);
+            //        app.fx5u.ResetRegister("M503", 0);
+            //        app.curConfig.tech_Std = "VK386786";
+            //        break;
+            //}
             if(batteryNum2Rbtn.Checked)
             {
                 app.SetScanNum(2,true);
