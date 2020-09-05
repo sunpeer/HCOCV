@@ -499,6 +499,10 @@ namespace BLL
             }
         }
 
+        public void FTune()
+        {
+            sr2000w.SendCmd("FTUNNE");
+        }
         public void ConnectBt3562()
         {
             string msg = "";
@@ -1713,6 +1717,23 @@ namespace BLL
             sr2000w.DataReceivedEventHandler = null;
             //超时结束读码
             sr2000w.SendCmd("LOFF");
+            if(plcState==PlcState.STOP)
+            {
+                //if (curLevel)
+                //    //不在扫码了
+                //    fx5u.ResetRegister("D123", 0);
+                //else
+                //    //不在扫码了
+                //    fx5u.ResetRegister("D124", 0);
+                //三色灯报警
+                fx5u.SendCmd("D141");
+                //主界面显示错误信息
+                //string errMessage = Sr2000wErr("扫码超时");
+                ErrorEventHandler?.BeginInvoke("扫码枪扫码超时", null, null);
+                UploadErrorA("A-001", "扫码超时");
+                return;
+
+            }
             if (curConfig.scaner_move_enable == "0")
             {
                 scanNum += 1;
