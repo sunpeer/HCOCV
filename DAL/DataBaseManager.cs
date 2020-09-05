@@ -65,14 +65,17 @@ namespace DAL
             DataTable dt = DBOper.GetDataTable(sql, p1);
             return dt;
         }
+
         public static bool LoadLog2CSV(string csvpath,int day,string fName)
         {
             try
             {
-                string sqlcmd = @"select * into outfile @csvpath fields terminated by ',' lines terminated by '\n' " +
-                "from (select '操作时间','接口','工序','操作员工号','设备资源编号','序列号','返回结果','返回信息','操作员姓名'," +
-                "'工单','型号','检测项目','检测项目描述','标准值','上限值','下限值','检测结果','错误说明','电阻','电压','补偿前电压','温度','K值'," +
-                "'o1工序电压','o1工序测量时间','设备状态代号','设备状态','故障代号','故障描述' union select operTime,fName,process,userId,resourceId," +
+                string sqlcmd = @"select * into outfile @csvpath character set GBK fields terminated by ',' lines terminated by '\n' " +
+                "from (select '操作时间' as operTime,'接口' as fName,'工序' as process,'操作员工号' as userId,'设备资源编号' as resourceId,'序列号' as sn,'返回结果' as result,"+
+                "'返回信息' as message,'操作员姓名' as userName,'工单' as shop_order,'型号' as tech_no,'检测项目' as inspection_Item,'检测项目描述' as inspection_Desc,"+
+                "'标准值' as standard,'上限值' as upper_limit,'下限值' as lower_limit,'检测结果' as flag,'错误说明' as ng_code,'电阻' as resistance,'电压' as voltage,"+
+                "'补偿前电压' as origin_voltage,'温度' as temperature,'K值' as K,'o1工序电压' as o1_voltage,'o1工序测量时间' as o1_date,'设备状态代号' as status,"+
+                "'设备状态' as status_des,'故障代号' as err_code,'故障描述' as err_desc union select operTime,fName,process,userId,resourceId," +
                 "sn,result,message,userName,shop_order,tech_no,inspection_Item,inspection_Desc,standard,upper_limit,lower_limit,flag,ng_code," +
                 "resistance,voltage,origin_voltage,temperature,K,o1_voltage,o1_date,status,status_des,err_code,err_desc from log " +
                 "where to_days(now())-to_days(operTime)<=@day";
@@ -100,9 +103,10 @@ namespace DAL
         {
             try
             {
-                string sqlcmd = @"select * into outfile @csvpath fields terminated by ',' lines terminated by '\n' " +
-                    "from (select '序列号','操作时间','操作员工','工序','电阻','电压','补偿前电压','温度','K值','O1工序电压'," +
-                    "'O1工序测量时间','检测结果','错误类型','上传状态','校验结果','型号','工单','温度补偿系数' union select sn,opertime,user,operation_id," +
+                string sqlcmd = @"select * into outfile @csvpath character set gbk fields terminated by ',' lines terminated by '\n' " +
+                    "from (select '序列号' as sn,'操作时间' as opertime,'操作员工' as user,'工序' as operation_id,'电阻' as resistance,'电压' as voltage,"+
+                    "'补偿前电压' as origin_voltage,'温度' as temperature,'K值' as K,'O1工序电压' as o1_voltage,'O1工序测量时间' as o1_date,'检测结果' as result,"+
+                    "'错误类型' as errtype,'上传状态' as savedflag,'校验结果' as verifyflag,'型号' as techId,'工单' as shop_order,'温度补偿系数' as temCoeff union select sn,opertime,user,operation_id," +
                     "resistance,voltage,origin_voltage,temperature,K,o1_voltage,o1_date,result,errtype,savedflag,verifyflag,techId,shop_order,temCoeff from battery " +
                     "where to_days(now())-to_days(opertime)<=@day) b;";
                 MySqlParameter path = new MySqlParameter("@csvpath", csvpath);
