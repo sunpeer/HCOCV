@@ -326,7 +326,7 @@ namespace UIL
         {
             if(obj)
             {
-                app.FTune();
+                //app.FTune();
                 this.Invoke(new Action(() =>
                 {
                     keyenceconled.ForeColor = Color.Lime;
@@ -656,10 +656,10 @@ namespace UIL
         }
         private void KeyenceConShowCallBack(bool connectedFlag)
         {
-            if (connectedFlag)
-            {
-                app.FTune();
-            }
+            //if (connectedFlag)
+            //{
+            //    app.FTune();
+            //}
             this.Invoke(new Action(() =>
             {
                 keyenceconled.ForeColor = connectedFlag ? Color.Lime : Color.Gray;
