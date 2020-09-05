@@ -935,7 +935,7 @@ namespace BLL
                             curIOAddrStr = "D6";
                             logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开上层第二通道");
                         }
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         //检测电池啊啊
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
@@ -985,7 +985,7 @@ namespace BLL
                             SendFx5uCmd(PlcLabel.D17);
                             curIOAddrStr = "D17";
                         }
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         //检测电池
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
@@ -1114,7 +1114,7 @@ namespace BLL
                         curIOAddrStr = "D6";
                         logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测2块电池，打开上层第二通道");
                     }
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     //检测电池啊啊
                     bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                     //发送测试指令
@@ -1164,7 +1164,7 @@ namespace BLL
                         SendFx5uCmd(PlcLabel.D17);
                         curIOAddrStr = "D17";
                     }
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     //检测电池
                     bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                     //发送测试指令
@@ -1375,7 +1375,7 @@ namespace BLL
                     curIOAddrStr = changeChannelLabel.ToString();
                     SendFx5uCmd(changeChannelLabel);
                     bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     //发送测试指令
                     bt3562.SendCmd(":FETCH?");
                 }
@@ -1388,7 +1388,7 @@ namespace BLL
                     curIOAddrStr = changeChannelLabel.ToString();
                     SendFx5uCmd(changeChannelLabel);
                     bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     //发送测试指令
                     bt3562.SendCmd(":FETCH?");
                 }
@@ -1905,7 +1905,7 @@ namespace BLL
                         Thread.Sleep(10);
                         //检测电池啊啊
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(2000);  //让电池检测仪去充分测量数据，然后再去获取
+                        Thread.Sleep(1000);  //让电池检测仪去充分测量数据，然后再去获取
                         //发送测试指令
                         bt3562.SendCmd(":FETCH?");
                         logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送了:FETCH?指令");
@@ -1945,7 +1945,7 @@ namespace BLL
                             curIOAddrStr = "D6";
                             logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测2块电池，打开上层第二通道");
                         }
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         //检测电池啊啊
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
@@ -2066,7 +2066,7 @@ namespace BLL
                             SendFx5uCmd(PlcLabel.D17);
                             curIOAddrStr = "D17";
                         }
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         //检测电池
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
@@ -2107,7 +2107,7 @@ namespace BLL
                             SendFx5uCmd(PlcLabel.D17);
                             curIOAddrStr = "D17";
                         }
-                        Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                         //检测电池
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令

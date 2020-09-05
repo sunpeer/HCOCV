@@ -59,7 +59,7 @@ namespace DAL
         public static DataTable GetBatteryInfobyDay(int day)
         {
             string sql = @"select sn,opertime,user,operation_id," +
-                    "resistance,voltage,origin_voltage,temCoeff,temperature,K,o1_voltage,o1_date,result,errtype,savedflag,verifyflag,techId,shop_order,temCoeff from battery " +
+                    "resistance,voltage,origin_voltage,temCoeff,temperature,K,o1_voltage,o1_date,result,errtype,savedflag,verifyflag,techId,shop_order from battery " +
                     "where to_days(now())-to_days(opertime)=@day;";
             MySqlParameter p1 = new MySqlParameter("@day", day);
             DataTable dt = DBOper.GetDataTable(sql, p1);
