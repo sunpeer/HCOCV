@@ -31,9 +31,6 @@ namespace BLL
     /// </summary>
     public class App
     {
-        private Mutex mut;
-        private List<string> MySns;
-        private List<string> VandR;
         private bool verifyFalseFlag;
         static int VOLTAGE_UNIT=1000;
         static int tryScanNum = 4;
@@ -69,6 +66,7 @@ namespace BLL
         private Temperature temperature;
         private MesConnect mes;
         public UploadStatusThread statusUpload;
+
         public Action SendBatteryDownShowEvent;
 
         public Action<string> ErrorEventHandler;
@@ -158,7 +156,6 @@ namespace BLL
         }
         public App()
         {
-            VandR = new List<string>();
             bt3562 = new Bt3562();
             sr2000w = new Sr2000w();
             fx5u = new Fx5u();
@@ -178,8 +175,7 @@ namespace BLL
             statusUpload = new UploadStatusThread(mes);
             statusUpload.LogShowEventHandler = LogDGVadd;
             xmlOper = new XmlOperation();
-            mut = new Mutex();
-            MySns = new List<string>();
+
         }
 
         public int getDataByUser(string user)
@@ -724,7 +720,6 @@ namespace BLL
                 supportOnPosition = false;
                 probeOnPosition = false;
                 scanDown = false;
-                measureDown = false;
                 //部署自动运行线程
                 fx5u.EventMeditator = new Action<PlcLabel>(AutoRun);
                 //CreateSystemStartLog();
@@ -944,7 +939,7 @@ namespace BLL
                             curIOAddrStr = "D6";
                             logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开上层第二通道");
                         }
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                         //检测电池啊啊
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
@@ -994,7 +989,7 @@ namespace BLL
                             SendFx5uCmd(PlcLabel.D17);
                             curIOAddrStr = "D17";
                         }
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                         //检测电池
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
@@ -1021,204 +1016,164 @@ namespace BLL
         }
         private void Sr2000wGetSns(string sns)
         {
-            logStreamWriter.WriteLine(DateTime.Now.ToString() + "扫码枪扫到了码");
+            logStreamWriter.WriteLine(DateTime.Now.ToString()+"扫码枪扫到了码");
             //释放计时器
             sr2000wTimer?.Stop();
             sr2000wTimer?.Dispose();
             //normalFlag = true;
             //从字符串转为array
             sns = sns.Substring(0, sns.Length - 1);
-            if (isNotFullBattery)
+            string[] snArray = sns.Split(',');
+            curBattery = new Battery[snArray.Length];
+            string msg = "";
+            for (short i = 0; i < snArray.Length; i++)
             {
-                string[] snArray = sns.Split(',');
-                curBattery = new Battery[snArray.Length];
-                string msg = "";
-                for (short i = 0; i < snArray.Length; i++)
-                {
-                    string techId = "";
-                    string shop_order = "";
-                    string o1_voltage = "";
-                    string o1_date = "";
-                    curBattery[i] = new Battery();
-                    curBattery[i].sn = snArray[snArray.Length - 1 - i];
-                    curBattery[i].operation_id = curConfig.operation_id;
-                    myMonitor.InBatteryNum += 1;
-                    curBattery[i].verifyFlag = VerifyBattery(curBattery[i].sn, ref techId, ref shop_order, ref o1_voltage, ref o1_date, ref msg);
-                    curBattery[i].desc = msg;
-                    curBattery[i].operTime = DateTime.Now;
-                    curBattery[i].user = curUser.Id;
-                    curBattery[i].techId = techId;
-                    curBattery[i].shop_order = shop_order;
+                string techId = "";
+                string shop_order = "";
+                string o1_voltage = "";
+                string o1_date = "";
+                curBattery[i] = new Battery();
+                curBattery[i].sn = snArray[snArray.Length - 1 - i];
+                curBattery[i].operation_id = curConfig.operation_id;
+                myMonitor.InBatteryNum += 1;
+                curBattery[i].verifyFlag = VerifyBattery(curBattery[i].sn, ref techId, ref shop_order, ref o1_voltage, ref o1_date, ref msg);
+                curBattery[i].desc = msg;
+                curBattery[i].operTime = DateTime.Now;
+                curBattery[i].user = curUser.Id;
+                curBattery[i].techId = techId;
+                curBattery[i].shop_order = shop_order;
 
-                    if (curBattery[i].verifyFlag)           //如果来料检验成功了才会返回这些信息的。
-                    {
-                        if (curConfig.operation_id == "O2T")
-                        {
-                            curBattery[i].o1_voltage = Math.Round(double.Parse(o1_voltage) / VOLTAGE_UNIT, 7);
-                            curBattery[i].o1_date = DateTime.Parse(o1_date);
-                        }
-                    }
-                    ////如果O2T工序的话
-                    //if (curConfig.operation_id == "O2T")
-                    //{
-                    //    curBattery[i].o1_voltage =Math.Round(double.Parse(o1_voltage) / VOLTAGE_UNIT, 7);
-                    //    curBattery[i].o1_date = DateTime.Parse(o1_date);
-                    //}
-                    if (curBattery[i].verifyFlag)
-                    {
-                        DataManager.BatteryVerifyBatteryWrite(curBattery[i]);
-                    }
-                    //curBattery[i].verifyFlag=VerifyBattery(snArray[i],ref msg);
-                    ////制作log
-                    //Log myLog = PackMyLog(curBattery[i].operTime, "来件检验");
-                    ////写入数据库
-                    //DataManager.BatteryVerifyLogWrite(curBattery[i], ref myLog);
-                    ////主界面DataGridView展示
-                    ////LogDGVadd(myLog);
-                    //LogShowInDataGridView.Invoke(myLog);
-                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "得到码" + (i + 1).ToString());
-                }
-                KeyenceReceivedDataVerifiedEvent?.Invoke();
-                List<int> ledList = new List<int>();
-                //扫码完成条件置1
-                scanDown = true;
-                curBatteryi = 0;
-                if (curLevel)
+                if (curBattery[i].verifyFlag)           //如果来料检验成功了才会返回这些信息的。
                 {
-                    #region
-                    int iStart = (curConfig.BatteryNum == 4) ? 44 : 45;
-                    for (int itemp = 0; itemp < curBattery.Length; itemp++)
+                    if (curConfig.operation_id == "O2T")
                     {
-                        if (!curBattery[itemp].verifyFlag)//如果不是再本机器上生产，则亮红灯
-                        {
-                            ledList.Add(iStart);
-                        }
-                        iStart++;
-                    }
-                    ledFlasher.SetFlash(ledList);
-                    #endregion
-                    //上层
-                    fx5u.ResetRegister("D123", 0);//上层不在扫码了
-                    if (supportOnPosition && probeOnPosition)
-                    {
-                        supportOnPosition = false;
-                        probeOnPosition = false;
-                        scanDown = false;
-                        if (!CheckTemperatureIsNormal())
-                        {
-                            fx5u.SendCmd("D173");
-                            UploadErrorA("A-004", "温度异常，不适合测量");
-                            return;
-                        }
-                        fx5u.SendCmd("D142");//测量使能
-                        if (curConfig.BatteryNum == 4)
-                        {
-                            Thread.Sleep(10);
-                            SendFx5uCmd(PlcLabel.D5); //打开上层第一通道
-                            curIOAddrStr = "D5";
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测4快电池，打开上层第一通道");
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            SendFx5uCmd(PlcLabel.D6); //打开上层第二通道电池
-                            curIOAddrStr = "D6";
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开上层第二通道");
-                        }
-                        Thread.Sleep(500);
-                        //检测电池啊啊
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送:FETCH?指令");
+                        curBattery[i].o1_voltage = Math.Round(double.Parse(o1_voltage) / VOLTAGE_UNIT, 7);
+                        curBattery[i].o1_date = DateTime.Parse(o1_date);
                     }
                 }
-                else
+                ////如果O2T工序的话
+                //if (curConfig.operation_id == "O2T")
+                //{
+                //    curBattery[i].o1_voltage =Math.Round(double.Parse(o1_voltage) / VOLTAGE_UNIT, 7);
+                //    curBattery[i].o1_date = DateTime.Parse(o1_date);
+                //}
+                if (curBattery[i].verifyFlag)
                 {
-                    curBatteryi = 0;
-                    #region
-                    int iStart = (curConfig.BatteryNum == 4) ? 48 : 49;
-                    for (int itemp = 0; itemp < curBattery.Length; itemp++)
+                    DataManager.BatteryVerifyBatteryWrite(curBattery[i]);
+                }
+                //curBattery[i].verifyFlag=VerifyBattery(snArray[i],ref msg);
+                ////制作log
+                //Log myLog = PackMyLog(curBattery[i].operTime, "来件检验");
+                ////写入数据库
+                //DataManager.BatteryVerifyLogWrite(curBattery[i], ref myLog);
+                ////主界面DataGridView展示
+                ////LogDGVadd(myLog);
+                //LogShowInDataGridView.Invoke(myLog);
+                logStreamWriter.WriteLine(DateTime.Now.ToString() + "得到码" + (i + 1).ToString());
+            }
+            KeyenceReceivedDataVerifiedEvent?.Invoke();
+            List<int> ledList = new List<int>();
+            //扫码完成条件置1
+            scanDown = true;
+            curBatteryi = 0;
+            if (curLevel)
+            {
+                #region
+                int iStart = (curConfig.BatteryNum == 4) ? 44 : 45;
+                for (int itemp = 0; itemp < curBattery.Length; itemp++)
+                {
+                    if (!curBattery[itemp].verifyFlag)//如果不是再本机器上生产，则亮红灯
                     {
-                        if (!curBattery[itemp].verifyFlag)//如果不是在本机器上生产，则亮红灯
-                        {
-                            ledList.Add(iStart);
-                        }
-                        iStart++;
+                        ledList.Add(iStart);
                     }
-                    downLedFlasher.SetFlash(ledList);
-                    #endregion
-                    //下层托
-                    fx5u.ResetRegister("D124", 0);//下层不在扫码了
-                    if (supportOnPosition && probeOnPosition)
+                    iStart++;
+                }
+                ledFlasher.SetFlash(ledList);
+                #endregion
+                //上层
+                fx5u.ResetRegister("D123",0);//上层不在扫码了
+                if (supportOnPosition && probeOnPosition)
+                {
+                    supportOnPosition = false;
+                    probeOnPosition = false;
+                    scanDown = false;
+                    if (!CheckTemperatureIsNormal())
                     {
-                        supportOnPosition = false;
-                        probeOnPosition = false;
-                        scanDown = false;
-                        if (!CheckTemperatureIsNormal())
-                        {
-                            fx5u.SendCmd("D173");
-                            UploadErrorA("A-004", "温度异常，不适合测量");
-                            return;
-                        }
-                        fx5u.SendCmd("D142");//开始测量
-                        if (curConfig.BatteryNum == 4)
-                        {
-                            Thread.Sleep(10);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测4块电池，打开下层第一通道");
-                            SendFx5uCmd(PlcLabel.D16);
-                            curIOAddrStr = "D16";
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开下层第二通道");
-                            SendFx5uCmd(PlcLabel.D17);
-                            curIOAddrStr = "D17";
-                        }
-                        Thread.Sleep(500);
-                        //检测电池
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送完:FETCH?指令");
+                        fx5u.SendCmd("D173");
+                        UploadErrorA("A-004", "温度异常，不适合测量");
+                        return;
                     }
+                    fx5u.SendCmd("D142");//测量使能
+                    if (curConfig.BatteryNum == 4)
+                    {
+                        Thread.Sleep(10);
+                        SendFx5uCmd(PlcLabel.D5); //打开上层第一通道
+                        curIOAddrStr = "D5";
+                        logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测4快电池，打开上层第一通道");
+                    }
+                    else
+                    {
+                        Thread.Sleep(10);
+                        SendFx5uCmd(PlcLabel.D6); //打开上层第二通道电池
+                        curIOAddrStr = "D6";
+                        logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测2块电池，打开上层第二通道");
+                    }
+                    Thread.Sleep(1000);
+                    //检测电池啊啊
+                    bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
+                    //发送测试指令
+                    bt3562.SendCmd(":FETCH?");
+                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送:FETCH?指令");
                 }
             }
             else
             {
-                MySns = new List<string>(sns.Split(','));
-                if (measureDown)
+                #region
+                int iStart = (curConfig.BatteryNum == 4) ? 48 : 49;
+                for (int itemp = 0; itemp < curBattery.Length; itemp++)
                 {
-                    scanDown = false;
-                    measureDown = false;
-                    if(!CheckBatteriesErrorAlways())
+                    if (!curBattery[itemp].verifyFlag)//如果不是在本机器上生产，则亮红灯
                     {
-                        if (curLevel)
-                        {
-                            fx5u.ResetRegister("D123", 0);//上层不在扫码了
-                            SendFx5uCmd(PlcLabel.D108);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，下层电池进去");
-                            logStreamWriter.Flush();
-                        }
-                        else
-                        {
-                            fx5u.ResetRegister("D124", 0);//下层不在扫码了
-                            SendFx5uCmd(PlcLabel.D119);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，上层电池进去");
-                            logStreamWriter.Flush();
-                        }
+                        ledList.Add(iStart);
+                    }
+                    iStart++;
+                }
+                downLedFlasher.SetFlash(ledList);
+                #endregion
+                //下层托
+                fx5u.ResetRegister("D124", 0);//下层不在扫码了
+                if (supportOnPosition && probeOnPosition)
+                {
+                    supportOnPosition = false;
+                    probeOnPosition = false;
+                    scanDown = false;
+                    if (!CheckTemperatureIsNormal())
+                    {
+                        fx5u.SendCmd("D173");
+                        UploadErrorA("A-004", "温度异常，不适合测量");
+                        return;
+                    }
+                    fx5u.SendCmd("D142");//开始测量
+                    if (curConfig.BatteryNum==4)
+                    {
+                        Thread.Sleep(10);
+                        logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测4块电池，打开下层第一通道");
+                        SendFx5uCmd(PlcLabel.D16);
+                        curIOAddrStr = "D16";
                     }
                     else
                     {
-                        fx5u.SendCmd("D146");//连续测量不合格
-                        ErrorEventHandler?.BeginInvoke("连续测量不合格", null, null);
-                        UploadErrorA("A-002", "电池连续不合格");
+                        Thread.Sleep(10);
+                        logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测2块电池，打开下层第二通道");
+                        SendFx5uCmd(PlcLabel.D17);
+                        curIOAddrStr = "D17";
                     }
-                    manageData();
-                } else
-                {
-                    scanDown = true;
+                    Thread.Sleep(1000);
+                    //检测电池
+                    bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
+                    //发送测试指令
+                    bt3562.SendCmd(":FETCH?");
+                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送完:FETCH?指令");
                 }
             }
         //}
@@ -1301,331 +1256,26 @@ namespace BLL
         }
         private void ChannelChangedCallBack(string RandV)
         {
-            if(isNotFullBattery)
+            fx5u.ResetRegister(curIOAddrStr, 0);
+            curBatteryi += 1;
+            if (curBattery[curBatteryi - 1].verifyFlag) //如果该电池是在本机器上加工
             {
-                fx5u.ResetRegister(curIOAddrStr, 0);
-                curBatteryi += 1;
-                if (curBattery[curBatteryi - 1].verifyFlag) //如果该电池是在本机器上加工
-                {
-                    double v;
-                    double r;
-                    logStreamWriter.WriteLine(DateTime.Now.ToString() + "正在获取" + "第" + curBatteryi.ToString() + "块电池的电压电阻");
-                    //删除掉所有的空格
-                    RandV = RandV.Replace(" ", "");
-                    //区分电压和电阻
-                    string[] values = RandV.Split(',');
-                    r = Math.Abs(double.Parse(values[0]));
-                    v = Math.Abs(double.Parse(values[1]));
-                    if (!CheckRVNormal(r, v))
-                    {
-                        //fx5u.SendCmd("D143");
-                        //Thread.Sleep(10);
-                        //fx5u.SendCmd("D148");
-                        //ErrorEventHandler?.BeginInvoke("第" + ((curConfig.BatteryNum == 4) ? curBatteryi : curBatteryi + 1) + "通道电池检测异常",null,null);
-                        //UploadErrorA("A-003", "电压电阻测试异常");
-                        curBattery[curBatteryi - 1].desc = "电压电阻测量异常";
-                        List<int> ledsAddr;
-                        if (curLevel) //上层
-                            ledsAddr = ledFlasher.getFlshAddr();
-                        else
-                            ledsAddr = downLedFlasher.getFlshAddr();
-                        if (ledsAddr == null)//设置新的led闪烁
-                        {
-                            int iLabel = curLevel ? 44 : 48;
-                            int iStart = (curConfig.BatteryNum == 4) ? iLabel : iLabel + 1;
-                            int iTemp = iStart + curBatteryi - 1;
-                            ledsAddr = new List<int>();
-                            ledsAddr.Add(iTemp);
-                            if (curLevel)
-                                ledFlasher.SetFlash(ledsAddr);
-                            else
-                                downLedFlasher.SetFlash(ledsAddr);
-                        }
-                        else
-                        {
-                            int iLabel = curLevel ? 44 : 48;
-                            int iStart = (curConfig.BatteryNum == 4) ? iLabel : iLabel + 1;
-                            int iTemp = iStart + curBatteryi - 1;
-                            ledsAddr.Add(iTemp);
-                            if (curLevel)
-                                ledFlasher.SetFlash(ledsAddr);
-                            else
-                                downLedFlasher.SetFlash(ledsAddr);
-                        }
-                        SendBatteryDownShowEvent?.Invoke();
-                    }
-                    else
-                    {
-                        //测量数加1
-                        curBattery[curBatteryi - 1].operTime = DateTime.Now;
-                        myMonitor.TestBatteryNum += 1;
-                        //处理小数点位数：
-                        r = Math.Round(r, 7);
-                        curBattery[curBatteryi - 1].resistance = r;
-                        double tempV = Math.Round(v, 7);
-                        curBattery[curBatteryi - 1].origin_voltage = tempV;
-                        double temper = 0;
-                        v = temperatureCalculate(ref temper, v);
-                        //处理小数点位数
-                        v = Math.Round(v, 7);
-                        curBattery[curBatteryi - 1].temperature = temper;
-                        curBattery[curBatteryi - 1].voltage = v;
-                        if (curConfig.operation_id == "O2T")
-                            curBattery[curBatteryi - 1].K = CalculateK(curBattery[curBatteryi - 1].o1_voltage, v, curBattery[curBatteryi - 1].o1_date, curBattery[curBatteryi - 1].operTime);
-                        //判断电池是否合格
-                        JudgeBattery(curBattery[curBatteryi - 1], ref curBattery[curBatteryi - 1].result, ref curBattery[curBatteryi - 1].k_flag, ref curBattery[curBatteryi - 1].errorType);
-                        //上传到MES系统
-                        curBattery[curBatteryi - 1].user = curUser.Id;
-                        string msg = "";
-                        bool sendFlag = SendMes(curBattery[curBatteryi - 1], ref msg);
-                        curBattery[curBatteryi - 1].MesSaved = sendFlag;
-                        curBattery[curBatteryi - 1].tempCoeff = curConfig.temCoeff;
-                        if (curBattery[curBatteryi - 1].MesSaved)
-                            myMonitor.SavedBatteryNum += 1;
-                        DataManager.BatterySaveBatteryWrite(curBattery[curBatteryi - 1]);
-
-                        //Log mylog = PackMyLog(DateTime.Now, "上传");
-                        //DataManager.BatterySave(curBattery[curBatteryi - 1], ref mylog);
-                        ////LogDGVadd(mylog);
-                        //LogShowInDataGridView.Invoke(mylog);
-                        //Action<Battery> BatteryShowAsy = new Action<Battery>(BatteryDGVadd);
-                        //BatteryShowAsy.BeginInvoke(curBattery[curBatteryi - 1],null,null);
-
-                        batteryInfoShowInDataGridView?.BeginInvoke(curBattery[curBatteryi - 1], null, null);
-                        SendBatteryDownShowEvent?.Invoke();
-                        //先设置一下istart
-                        int iLabel = curLevel ? 44 : 48;
-                        int iStart = (curConfig.BatteryNum == 4) ? iLabel : iLabel + 1;
-                        int iTemp = iStart + curBatteryi - 1;
-                        //如果合格则亮绿灯,绿灯为1
-                        if (curBattery[curBatteryi - 1].result)
-                        {
-                            PlcLabel labelTemp = (PlcLabel)iTemp;
-                            SendFx5uCmd(labelTemp);
-                        }
-                        //如果不合格，则亮红灯，红灯为1
-                        //if (!curBattery[curBatteryi-1].result)
-                        //{
-                        //    PlcLabel labelTemp = (PlcLabel)iTemp;
-                        //    SendFx5uCmd(labelTemp);
-                        //}
-                        statistic.Insert(0, curBattery[curBatteryi - 1].result);
-                        if (statistic.Count == curConfig.StatisticNum + 1)
-                            statistic.RemoveAt(curConfig.StatisticNum);
-                    }
-                }
-                if (curBatteryi != curBattery.Length)
-                {
-                    //可以继续跳到下一个
-                    if (curLevel)
-                    {
-                        //打开下一个通道
-                        int add = (curConfig.BatteryNum == 4) ? 8 : 10;
-                        int i_label = curBatteryi * 2 + add;
-                        PlcLabel changeChannelLabel = (PlcLabel)i_label;
-                        curIOAddrStr = changeChannelLabel.ToString();
-                        SendFx5uCmd(changeChannelLabel);
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                    }
-                    else
-                    {
-                        //打开下一个通道
-                        int add = (curConfig.BatteryNum == 4) ? 24 : 26;
-                        int i_label = curBatteryi * 2 + add;
-                        PlcLabel changeChannelLabel = (PlcLabel)i_label;
-                        curIOAddrStr = changeChannelLabel.ToString();
-                        SendFx5uCmd(changeChannelLabel);
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                    }
-                }
-                else
-                {
-                    fx5u.ResetRegister("D143", 1);
-                    if (!CheckBatteriesErrorAlways())
-                    {
-                        if (curLevel)
-                        {
-                            SendFx5uCmd(PlcLabel.D108);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，下层电池进去");
-                            logStreamWriter.Flush();
-                        }
-                        else
-                        {
-                            SendFx5uCmd(PlcLabel.D119);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，上层电池进去");
-                            logStreamWriter.Flush();
-                        }
-                    }
-                    else
-                    {
-                        fx5u.SendCmd("D146");//连续测量不合格
-                        ErrorEventHandler?.BeginInvoke("连续测量不合格", null, null);
-                        UploadErrorA("A-002", "电池连续不合格");
-                    }
-                }
-            }
-            else
-            {
-                BatteryCount++;
-                fx5u.ResetRegister(curIOAddrStr, 0);
+                double v;
+                double r;
+                logStreamWriter.WriteLine(DateTime.Now.ToString() + "正在获取" + "第" + curBatteryi.ToString() + "块电池的电压电阻");
                 //删除掉所有的空格
                 RandV = RandV.Replace(" ", "");
-                double v, r;
                 //区分电压和电阻
                 string[] values = RandV.Split(',');
                 r = Math.Abs(double.Parse(values[0]));
                 v = Math.Abs(double.Parse(values[1]));
-                //把电压和电阻放进VandR中
-                if(!CheckRVNormal(r,v))
+                if (!CheckRVNormal(r, v))
                 {
-                    VandR.Add("#;#");
-                }else
-                {
-                    VandR.Add(String.Format("{0};{1}", r.ToString(), v.ToString()));
-                }
-                if(BatteryCount!=curConfig.BatteryNum)
-                {
-                    //针对不同的层，发不同的通道打开指令
-                    if (curLevel)
-                    {
-                        //打开下一个通道
-                        int add = (curConfig.BatteryNum == 4) ? 8 : 10;
-                        int i_label = curBatteryi * 2 + add;
-                        PlcLabel changeChannelLabel = (PlcLabel)i_label;
-                        curIOAddrStr = changeChannelLabel.ToString();
-                        SendFx5uCmd(changeChannelLabel);
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                    }
-                    else
-                    {
-                        //打开下一个通道
-                        int add = (curConfig.BatteryNum == 4) ? 24 : 26;
-                        int i_label = curBatteryi * 2 + add;
-                        PlcLabel changeChannelLabel = (PlcLabel)i_label;
-                        curIOAddrStr = changeChannelLabel.ToString();
-                        SendFx5uCmd(changeChannelLabel);
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                    }
-
-                }else
-                {
-                    fx5u.ResetRegister("D143", 1);
-                    if (scanDown)
-                    {
-                        scanDown = false;
-                        measureDown = false;
-                        if(!CheckBatteriesErrorAlways())
-                        {
-                            if (curLevel)
-                            {
-                                SendFx5uCmd(PlcLabel.D108);
-                                logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，下层电池进去");
-                                logStreamWriter.Flush();
-                            }
-                            else
-                            {
-                                SendFx5uCmd(PlcLabel.D119);
-                                logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，上层电池进去");
-                                logStreamWriter.Flush();
-                            }
-                        }else
-                        {
-                                fx5u.SendCmd("D146");//连续测量不合格
-                                ErrorEventHandler?.BeginInvoke("连续测量不合格", null, null);
-                                UploadErrorA("A-002", "电池连续不合格");
-                        }
-
-                        //处理数据
-                        manageData();
-                    }
-                    else
-                    {
-                        measureDown = true;
-                    }
-                }
-            }
-        }
-
-        private void manageData()
-        {
-            curBattery = new Battery[MySns.Count];
-            string msg = "";
-            for (short i = 0; i < MySns.Count; i++)
-            {
-                string techId = "";
-                string shop_order = "";
-                string o1_voltage = "";
-                string o1_date = "";
-                curBattery[i] = new Battery();
-                curBattery[i].sn = MySns[MySns.Count - 1 - i];
-                curBattery[i].operation_id = curConfig.operation_id;
-                myMonitor.InBatteryNum += 1;
-                curBattery[i].verifyFlag = VerifyBattery(curBattery[i].sn, ref techId, ref shop_order, ref o1_voltage, ref o1_date, ref msg);
-                curBattery[i].desc = msg;
-                curBattery[i].operTime = DateTime.Now;
-                curBattery[i].user = curUser.Id;
-                curBattery[i].techId = techId;
-                curBattery[i].shop_order = shop_order;
-
-                if (curBattery[i].verifyFlag)           //如果来料检验成功了才会返回这些信息的。
-                {
-                    if (curConfig.operation_id == "O2T")
-                    {
-                        curBattery[i].o1_voltage = Math.Round(double.Parse(o1_voltage) / VOLTAGE_UNIT, 7);
-                        curBattery[i].o1_date = DateTime.Parse(o1_date);
-                    }
-                    DataManager.BatteryVerifyBatteryWrite(curBattery[i]);
-                }
-                logStreamWriter.WriteLine(DateTime.Now.ToString() + "得到码" + (i + 1).ToString());
-            }
-            KeyenceReceivedDataVerifiedEvent?.Invoke();
-            //对验证失败的电池报红灯
-            List<int> ledList = new List<int>();
-            if (curLevel)
-            {
-                int iStart = (curConfig.BatteryNum == 4) ? 44 : 45;
-                for (int itemp = 0; itemp < curBattery.Length; itemp++)
-                {
-                    if (!curBattery[itemp].verifyFlag)//如果不是再本机器上生产，则亮红灯
-                    {
-                        ledList.Add(iStart);
-                    }
-                    iStart++;
-                }
-                ledFlasher.SetFlash(ledList);
-            }
-            else
-            {
-                #region
-                int iStart = (curConfig.BatteryNum == 4) ? 48 : 49;
-                for (int itemp = 0; itemp < curBattery.Length; itemp++)
-                {
-                    if (!curBattery[itemp].verifyFlag)//如果不是在本机器上生产，则亮红灯
-                    {
-                        ledList.Add(iStart);
-                    }
-                    iStart++;
-                }
-                downLedFlasher.SetFlash(ledList);
-                #endregion
-            }
-            for (short i=0;i<MySns.Count;i++)
-            {
-                curBatteryi += 1;
-                if(VandR[i]=="#;#")
-                {
+                    //fx5u.SendCmd("D143");
+                    //Thread.Sleep(10);
+                    //fx5u.SendCmd("D148");
+                    //ErrorEventHandler?.BeginInvoke("第" + ((curConfig.BatteryNum == 4) ? curBatteryi : curBatteryi + 1) + "通道电池检测异常",null,null);
+                    //UploadErrorA("A-003", "电压电阻测试异常");
                     curBattery[curBatteryi - 1].desc = "电压电阻测量异常";
                     List<int> ledsAddr;
                     if (curLevel) //上层
@@ -1659,18 +1309,16 @@ namespace BLL
                 }
                 else
                 {
-                    string[] RV=MySns[i].Split('#');
                     //测量数加1
                     curBattery[curBatteryi - 1].operTime = DateTime.Now;
                     myMonitor.TestBatteryNum += 1;
-
                     //处理小数点位数：
-                    double r = Math.Round(double.Parse(RV[0]), 7);
+                    r = Math.Round(r, 7);
                     curBattery[curBatteryi - 1].resistance = r;
-                    double tempV = Math.Round(double.Parse(RV[1]), 7);
+                    double tempV = Math.Round(v, 7);
                     curBattery[curBatteryi - 1].origin_voltage = tempV;
                     double temper = 0;
-                    double v = temperatureCalculate(ref temper, tempV);
+                    v = temperatureCalculate(ref temper, v);
                     //处理小数点位数
                     v = Math.Round(v, 7);
                     curBattery[curBatteryi - 1].temperature = temper;
@@ -1681,7 +1329,7 @@ namespace BLL
                     JudgeBattery(curBattery[curBatteryi - 1], ref curBattery[curBatteryi - 1].result, ref curBattery[curBatteryi - 1].k_flag, ref curBattery[curBatteryi - 1].errorType);
                     //上传到MES系统
                     curBattery[curBatteryi - 1].user = curUser.Id;
-
+                    string msg = "";
                     bool sendFlag = SendMes(curBattery[curBatteryi - 1], ref msg);
                     curBattery[curBatteryi - 1].MesSaved = sendFlag;
                     curBattery[curBatteryi - 1].tempCoeff = curConfig.temCoeff;
@@ -1696,7 +1344,7 @@ namespace BLL
                     //Action<Battery> BatteryShowAsy = new Action<Battery>(BatteryDGVadd);
                     //BatteryShowAsy.BeginInvoke(curBattery[curBatteryi - 1],null,null);
 
-                    batteryInfoShowInDataGridView?.BeginInvoke(curBattery[curBatteryi - 1], null, null);
+                    batteryInfoShowInDataGridView?.BeginInvoke(curBattery[curBatteryi - 1],null,null);
                     SendBatteryDownShowEvent?.Invoke();
                     //先设置一下istart
                     int iLabel = curLevel ? 44 : 48;
@@ -1717,6 +1365,61 @@ namespace BLL
                     statistic.Insert(0, curBattery[curBatteryi - 1].result);
                     if (statistic.Count == curConfig.StatisticNum + 1)
                         statistic.RemoveAt(curConfig.StatisticNum);
+                }
+            }
+            if (curBatteryi != curBattery.Length)
+            {
+                //可以继续跳到下一个
+                if (curLevel)
+                {
+                    //打开下一个通道
+                    int add = (curConfig.BatteryNum == 4) ? 8:10;
+                    int i_label = curBatteryi * 2 + add;
+                    PlcLabel changeChannelLabel = (PlcLabel)i_label;
+                    curIOAddrStr = changeChannelLabel.ToString();
+                    SendFx5uCmd(changeChannelLabel);
+                    bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
+                    Thread.Sleep(1000);
+                    //发送测试指令
+                    bt3562.SendCmd(":FETCH?");
+                }
+                else
+                {
+                    //打开下一个通道
+                    int add = (curConfig.BatteryNum == 4) ? 24 : 26;
+                    int i_label = curBatteryi * 2 + add;
+                    PlcLabel changeChannelLabel = (PlcLabel)i_label;
+                    curIOAddrStr = changeChannelLabel.ToString();
+                    SendFx5uCmd(changeChannelLabel);
+                    bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
+                    Thread.Sleep(1000);
+                    //发送测试指令
+                    bt3562.SendCmd(":FETCH?");
+                }
+            }
+            else
+            {
+                fx5u.ResetRegister("D143",1);
+                if(!CheckBatteriesErrorAlways())
+                {
+                    if (curLevel)
+                    {
+                        SendFx5uCmd(PlcLabel.D108);
+                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，下层电池进去");
+                        logStreamWriter.Flush();
+                    }
+                    else
+                    {
+                        SendFx5uCmd(PlcLabel.D119);
+                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "切换，上层电池进去");
+                        logStreamWriter.Flush();
+                    }
+                }
+                else
+                {
+                    fx5u.SendCmd("D146");//连续测量不合格
+                    ErrorEventHandler?.BeginInvoke("连续测量不合格",null,null);
+                    UploadErrorA("A-002", "电池连续不合格");
                 }
             }
         }
@@ -1878,8 +1581,6 @@ namespace BLL
         private bool errorFlag;
         public Action<bool> workRunWatchEventHandler;
         public Action<string> ScannerPositionEvent;
-        private int BatteryCount;
-        private bool measureDown;
 
         public void ResetLeds()
         {
@@ -2031,6 +1732,7 @@ namespace BLL
                 ErrorEventHandler?.BeginInvoke("扫码枪扫码超时", null, null);
                 UploadErrorA("A-001", "扫码超时");
                 return;
+
             }
             if (curConfig.scaner_move_enable == "0")
             {
@@ -2072,13 +1774,11 @@ namespace BLL
                     //先发送扫码指令，然后发送横移指令
                     //发送扫码指令
                     sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
-                    sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                    sr2000wTimer = new System.Timers.Timer(10000);
                     sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
                     sr2000wTimer.AutoReset = false;
                     sr2000wTimer.Start();
                     sr2000w.SendCmd("LON");
-                    //扫码枪在原位置扫1.5s
-                    Thread.Sleep(1500);
                     //发送横移指令
                     if (curConfig.scaner_position == "0")  //扫码枪在最左边
                     {
@@ -2119,9 +1819,6 @@ namespace BLL
                     fx5u.EventMeditator = null;
                     fx5u.ResetRegister("D101", 0);
                     curLevel = true;
-                    VandR.Clear();
-                    MySns.Clear();
-                    BatteryCount = 0;
                     //normalFlag = true;
                     logStreamWriter.WriteLine(DateTime.Now.ToString() + "上层电池到位");
                     ledFlasher.ResetFlash();
@@ -2171,15 +1868,13 @@ namespace BLL
                         scanNum = 0;
                         sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
                         BatteryOnPositionEvent?.BeginInvoke(null, null);
-                        sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                        sr2000wTimer = new System.Timers.Timer(10000);
                         sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
                         sr2000wTimer.AutoReset = false;
                         sr2000wTimer.Start();
                         SendFx5uCmd(PlcLabel.D123);//上层电池在扫码
                         sns=sr2000w.SendCmd("LON");
                         fx5u.EventMeditator = AutoRun;
-                        //让扫码枪在原地扫1.5s,再移动
-                        Thread.Sleep(1500);
                         //发送横移指令
                         if(curConfig.scaner_position=="0")  //扫码枪在最左边
                         {
@@ -2201,7 +1896,7 @@ namespace BLL
                     fx5u.ResetRegister("D103", 0);
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"托板到位");
                     supportOnPosition = true;
-                    if (probeOnPosition&&isNotFullBattery && scanDown)//如果在扫码，且探针到位了
+                    if (scanDown && probeOnPosition)//如果在扫码，且探针到位了
                     {
                         supportOnPosition = false;
                         probeOnPosition = false;
@@ -2235,40 +1930,6 @@ namespace BLL
                         //发送测试指令
                         bt3562.SendCmd(":FETCH?");
                         logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送了:FETCH?指令");
-                    }else if(!isNotFullBattery&&probeOnPosition)
-                    {
-                        //开始测量
-                        supportOnPosition = false;
-                        probeOnPosition = false;
-                        if (!CheckTemperatureIsNormal())
-                        {
-                            fx5u.SendCmd("D173");
-                            UploadErrorA("A-004", "温度异常，不适合测量");
-                            break;
-                        }
-                        fx5u.SendCmd("D142");//测量使能
-                        curBatteryi = 0;
-                        if (curConfig.BatteryNum == 4)
-                        {
-                            Thread.Sleep(10);
-                            SendFx5uCmd(PlcLabel.D5); //打开上层第一通道
-                            curIOAddrStr = "D5";
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测4块电池，打开上层第一通道");
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            SendFx5uCmd(PlcLabel.D6); //打开上层第二通道电池
-                            curIOAddrStr = "D6";
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开上层第二通道");
-                        }
-                        Thread.Sleep(10);
-                        //检测电池啊啊
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);  //让电池检测仪去充分测量数据，然后再去获取
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送了:FETCH?指令");
                     }
                     fx5u.EventMeditator = AutoRun;
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"退出托板到位了");
@@ -2278,7 +1939,7 @@ namespace BLL
                     fx5u.ResetRegister("D104", 0);
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"探针下降到位");
                     probeOnPosition = true;
-                    if (scanDown && supportOnPosition&&isNotFullBattery) //如果在扫码，且托板到位了
+                    if (scanDown && supportOnPosition) //如果在扫码，且托板到位了
                     {
                         supportOnPosition = false;
                         probeOnPosition = false;
@@ -2298,53 +1959,19 @@ namespace BLL
                             curIOAddrStr = "D5";
                             logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测4块电池，打开上层第一通道");
                         }
-                        else 
+                        else
                         {
                             Thread.Sleep(10);
                             SendFx5uCmd(PlcLabel.D6); //打开上层第二通道电池
                             curIOAddrStr = "D6";
                             logStreamWriter.WriteLine(DateTime.Now.ToString()+"检测2块电池，打开上层第二通道");
                         }
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                         //检测电池啊啊
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
                         bt3562.SendCmd(":FETCH?");
                         logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送完:FETCH?指令");
-                    }else if (!isNotFullBattery && probeOnPosition)
-                    {
-                        //开始测量
-                        supportOnPosition = false;
-                        probeOnPosition = false;
-                        if (!CheckTemperatureIsNormal())
-                        {
-                            fx5u.SendCmd("D173");
-                            UploadErrorA("A-004", "温度异常，不适合测量");
-                            break;
-                        }
-                        fx5u.SendCmd("D142");//测量使能
-                        curBatteryi = 0;
-                        if (curConfig.BatteryNum == 4)
-                        {
-                            Thread.Sleep(10);
-                            SendFx5uCmd(PlcLabel.D5); //打开上层第一通道
-                            curIOAddrStr = "D5";
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测4块电池，打开上层第一通道");
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            SendFx5uCmd(PlcLabel.D6); //打开上层第二通道电池
-                            curIOAddrStr = "D6";
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开上层第二通道");
-                        }
-                        Thread.Sleep(10);
-                        //检测电池啊啊
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);  //让电池检测仪去充分测量数据，然后再去获取
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送了:FETCH?指令");
                     }
                     fx5u.EventMeditator = AutoRun;
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"退出探针下降了");
@@ -2352,9 +1979,6 @@ namespace BLL
                 case PlcLabel.D170://下层电池送至检测位成功
                     fx5u.EventMeditator = null;
                     fx5u.ResetRegister("D170", 0);
-                    VandR.Clear();
-                    MySns.Clear();
-                    BatteryCount = 0;
                     //normalFlag = true;
                     curLevel = false;
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"下层电池到位");
@@ -2405,15 +2029,13 @@ namespace BLL
                         //发送扫码指令
                         scanNum = 0;
                         sr2000w.DataReceivedEventHandler = new Action<string>(Sr2000wGetSns);
-                        sr2000wTimer = new System.Timers.Timer(curConfig.Sr2000wTimeOut);
+                        sr2000wTimer = new System.Timers.Timer(10000);
                         sr2000wTimer.Elapsed += Sr2000wGetSnTimeOutForNomalRun;
                         sr2000wTimer.AutoReset = false;
                         sr2000wTimer.Start();
                         SendFx5uCmd(PlcLabel.D124);//上层电池在扫码
                         sns=sr2000w.SendCmd("LON");
                         fx5u.EventMeditator = AutoRun;
-                        //让扫码枪在原地扫1.5s,再移动
-                        Thread.Sleep(1500);
                         //发送横移指令
                         if (curConfig.scaner_position == "0")  //扫码枪在最左边
                         {
@@ -2438,7 +2060,7 @@ namespace BLL
                     //ledFlasher.ResetFlash();
                     supportOnPosition = true;
                     //判断是否可以开始检测
-                    if (scanDown && probeOnPosition&&isNotFullBattery)
+                    if (scanDown && probeOnPosition)
                     {
                         supportOnPosition = false;
                         probeOnPosition = false;
@@ -2465,44 +2087,11 @@ namespace BLL
                             SendFx5uCmd(PlcLabel.D17);
                             curIOAddrStr = "D17";
                         }
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                         //检测电池
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
                         bt3562.SendCmd(":FETCH?");
-                    }else if(!isNotFullBattery&&probeOnPosition)
-                    {
-                        //开始测量
-                        supportOnPosition = false;
-                        probeOnPosition = false;
-                        if (!CheckTemperatureIsNormal())
-                        {
-                            fx5u.SendCmd("D173");
-                            UploadErrorA("A-004", "温度异常，不适合测量");
-                            break;
-                        }
-                        fx5u.SendCmd("D142");//测量使能
-                        curBatteryi = 0;
-                        if (curConfig.BatteryNum == 4)
-                        {
-                            Thread.Sleep(10);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测4块电池，打开下层第一通道");
-                            SendFx5uCmd(PlcLabel.D16);
-                            curIOAddrStr = "D16";
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开下层第二通道");
-                            SendFx5uCmd(PlcLabel.D17);
-                            curIOAddrStr = "D17";
-                        }
-                        //检测电池啊啊
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);  //让电池检测仪去充分测量数据，然后再去获取
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送了:FETCH?指令");
                     }
                     fx5u.EventMeditator = AutoRun;
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"托板上升退出");
@@ -2512,7 +2101,7 @@ namespace BLL
                     fx5u.ResetRegister("D115", 0);
                     probeOnPosition = true;
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+ "探针下降到位");
-                    if (scanDown && supportOnPosition&&isNotFullBattery)
+                    if (scanDown && supportOnPosition)
                     {
                         supportOnPosition = false;
                         probeOnPosition = false;
@@ -2539,44 +2128,11 @@ namespace BLL
                             SendFx5uCmd(PlcLabel.D17);
                             curIOAddrStr = "D17";
                         }
-                        Thread.Sleep(500);
+                        Thread.Sleep(1000);
                         //检测电池
                         bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
                         //发送测试指令
                         bt3562.SendCmd(":FETCH?");
-                    }else if(!isNotFullBattery&&supportOnPosition)
-                    {
-                        //开始测量
-                        supportOnPosition = false;
-                        probeOnPosition = false;
-                        if (!CheckTemperatureIsNormal())
-                        {
-                            fx5u.SendCmd("D173");
-                            UploadErrorA("A-004", "温度异常，不适合测量");
-                            break;
-                        }
-                        fx5u.SendCmd("D142");//测量使能
-                        curBatteryi = 0;
-                        if (curConfig.BatteryNum == 4)
-                        {
-                            Thread.Sleep(10);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测4块电池，打开下层第一通道");
-                            SendFx5uCmd(PlcLabel.D16);
-                            curIOAddrStr = "D16";
-                        }
-                        else
-                        {
-                            Thread.Sleep(10);
-                            logStreamWriter.WriteLine(DateTime.Now.ToString() + "检测2块电池，打开下层第二通道");
-                            SendFx5uCmd(PlcLabel.D17);
-                            curIOAddrStr = "D17";
-                        }
-                        //检测电池啊啊
-                        bt3562.DataReceivedEventHandler = new Action<string>(ChannelChangedCallBack);
-                        Thread.Sleep(500);  //让电池检测仪去充分测量数据，然后再去获取
-                        //发送测试指令
-                        bt3562.SendCmd(":FETCH?");
-                        logStreamWriter.WriteLine(DateTime.Now.ToString() + "已经发送了:FETCH?指令");
                     }
                     fx5u.EventMeditator = AutoRun;
                     logStreamWriter.WriteLine(DateTime.Now.ToString()+"探针下降退出");
